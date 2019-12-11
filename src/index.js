@@ -523,11 +523,12 @@ const getHtmlChar = code => {
     var isEmoji = emojiData.includes(code);
     var fontClass = toHex(Math.floor(code / 0x400) * 0x400).toLowerCase();
 
-    var isControl = code <= 0x20 || (code >= 0x7f && code <= 0xa0) || code == 0xad ||
+    var isSpecial = code <= 0x20 || (code >= 0x7f && code <= 0xa0) || code == 0xad ||
         (code >= 0x2000 && code <= 0x200f) || code == 0x2011 || (code >= 0x2028 && code <= 0x202f) ||
-        (code >= 0x205f && code <= 0x206f);
+        (code >= 0x205f && code <= 0x206f) || (code >= 0xfe00 && code <= 0xfe0f) || code == 0xfeff ||
+        (code >= 0x1d173 && code <= 0x1d17a);
     var isTag = code >= 0xe0000 && code < 0xe2000;
-    var htmlChar = '&#' + (isControl ? code + (code >= 0x2000 ? 0xc000 : 0xe000) : isTag ? code - 0xe0000 + 0xe000 : code) + ';';
+    var htmlChar = '&#' + (isSpecial ? code + (code >= 0x1d000 ? -0xf000 : code >= 0xfe00 ? -0x1e00 : code >= 0x2000 ? 0xc000 : 0xe000) : isTag ? code - 0xe0000 + 0xe000 : code) + ';';
 
     return isEmoji ? `<div class="glyph emoji">${htmlChar}</div>` : `<div class="glyph u${fontClass}">${htmlChar}</div>`;
 }
