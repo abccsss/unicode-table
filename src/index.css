@@ -1,0 +1,974 @@
+@font-face { font-family: 'u0000'; src: url(../resources/fonts/u0000.woff) format('woff'); }
+@font-face { font-family: 'u0400'; src: url(../resources/fonts/u0400.woff) format('woff'); }
+@font-face { font-family: 'u0800'; src: url(../resources/fonts/u0800.woff) format('woff'); }
+@font-face { font-family: 'u0c00'; src: url(../resources/fonts/u0c00.woff) format('woff'); }
+@font-face { font-family: 'u1000'; src: url(../resources/fonts/u1000.woff) format('woff'); }
+@font-face { font-family: 'u1400'; src: url(../resources/fonts/u1400.woff) format('woff'); }
+@font-face { font-family: 'u1800'; src: url(../resources/fonts/u1800.woff) format('woff'); }
+@font-face { font-family: 'u1c00'; src: url(../resources/fonts/u1c00.woff) format('woff'); }
+@font-face { font-family: 'u2000'; src: url(../resources/fonts/u2000.woff) format('woff'); }
+@font-face { font-family: 'u2400'; src: url(../resources/fonts/u2400.woff) format('woff'); }
+@font-face { font-family: 'u2800'; src: url(../resources/fonts/u2800.woff) format('woff'); }
+@font-face { font-family: 'u2c00'; src: url(../resources/fonts/u2c00.woff) format('woff'); }
+@font-face { font-family: 'u3000'; src: url(../resources/fonts/u3000.woff) format('woff'); }
+@font-face { font-family: 'u3400'; src: url(../resources/fonts/u3400.woff) format('woff'); }
+@font-face { font-family: 'u3800'; src: url(../resources/fonts/u3800.woff) format('woff'); }
+@font-face { font-family: 'u3c00'; src: url(../resources/fonts/u3c00.woff) format('woff'); }
+@font-face { font-family: 'u4000'; src: url(../resources/fonts/u4000.woff) format('woff'); }
+@font-face { font-family: 'u4400'; src: url(../resources/fonts/u4400.woff) format('woff'); }
+@font-face { font-family: 'u4800'; src: url(../resources/fonts/u4800.woff) format('woff'); }
+@font-face { font-family: 'u4c00'; src: url(../resources/fonts/u4c00.woff) format('woff'); }
+@font-face { font-family: 'u5000'; src: url(../resources/fonts/u5000.woff) format('woff'); }
+@font-face { font-family: 'u5400'; src: url(../resources/fonts/u5400.woff) format('woff'); }
+@font-face { font-family: 'u5800'; src: url(../resources/fonts/u5800.woff) format('woff'); }
+@font-face { font-family: 'u5c00'; src: url(../resources/fonts/u5c00.woff) format('woff'); }
+@font-face { font-family: 'u6000'; src: url(../resources/fonts/u6000.woff) format('woff'); }
+@font-face { font-family: 'u6400'; src: url(../resources/fonts/u6400.woff) format('woff'); }
+@font-face { font-family: 'u6800'; src: url(../resources/fonts/u6800.woff) format('woff'); }
+@font-face { font-family: 'u6c00'; src: url(../resources/fonts/u6c00.woff) format('woff'); }
+@font-face { font-family: 'u7000'; src: url(../resources/fonts/u7000.woff) format('woff'); }
+@font-face { font-family: 'u7400'; src: url(../resources/fonts/u7400.woff) format('woff'); }
+@font-face { font-family: 'u7800'; src: url(../resources/fonts/u7800.woff) format('woff'); }
+@font-face { font-family: 'u7c00'; src: url(../resources/fonts/u7c00.woff) format('woff'); }
+@font-face { font-family: 'u8000'; src: url(../resources/fonts/u8000.woff) format('woff'); }
+@font-face { font-family: 'u8400'; src: url(../resources/fonts/u8400.woff) format('woff'); }
+@font-face { font-family: 'u8800'; src: url(../resources/fonts/u8800.woff) format('woff'); }
+@font-face { font-family: 'u8c00'; src: url(../resources/fonts/u8c00.woff) format('woff'); }
+@font-face { font-family: 'u9000'; src: url(../resources/fonts/u9000.woff) format('woff'); }
+@font-face { font-family: 'u9400'; src: url(../resources/fonts/u9400.woff) format('woff'); }
+@font-face { font-family: 'u9800'; src: url(../resources/fonts/u9800.woff) format('woff'); }
+@font-face { font-family: 'u9c00'; src: url(../resources/fonts/u9c00.woff) format('woff'); }
+@font-face { font-family: 'ua000'; src: url(../resources/fonts/ua000.woff) format('woff'); }
+@font-face { font-family: 'ua400'; src: url(../resources/fonts/ua400.woff) format('woff'); }
+@font-face { font-family: 'ua800'; src: url(../resources/fonts/ua800.woff) format('woff'); }
+@font-face { font-family: 'uac00'; src: url(../resources/fonts/uac00.woff) format('woff'); }
+@font-face { font-family: 'ub000'; src: url(../resources/fonts/ub000.woff) format('woff'); }
+@font-face { font-family: 'ub400'; src: url(../resources/fonts/ub400.woff) format('woff'); }
+@font-face { font-family: 'ub800'; src: url(../resources/fonts/ub800.woff) format('woff'); }
+@font-face { font-family: 'ubc00'; src: url(../resources/fonts/ubc00.woff) format('woff'); }
+@font-face { font-family: 'uc000'; src: url(../resources/fonts/uc000.woff) format('woff'); }
+@font-face { font-family: 'uc400'; src: url(../resources/fonts/uc400.woff) format('woff'); }
+@font-face { font-family: 'uc800'; src: url(../resources/fonts/uc800.woff) format('woff'); }
+@font-face { font-family: 'ucc00'; src: url(../resources/fonts/ucc00.woff) format('woff'); }
+@font-face { font-family: 'ud000'; src: url(../resources/fonts/ud000.woff) format('woff'); }
+@font-face { font-family: 'ud400'; src: url(../resources/fonts/ud400.woff) format('woff'); }
+@font-face { font-family: 'uf000'; src: url(../resources/fonts/uf000.woff) format('woff'); }
+@font-face { font-family: 'uf400'; src: url(../resources/fonts/uf400.woff) format('woff'); }
+@font-face { font-family: 'uf800'; src: url(../resources/fonts/uf800.woff) format('woff'); }
+@font-face { font-family: 'ufc00'; src: url(../resources/fonts/ufc00.woff) format('woff'); }
+@font-face { font-family: 'u10000'; src: url(../resources/fonts/u10000.woff) format('woff'); }
+@font-face { font-family: 'u10400'; src: url(../resources/fonts/u10400.woff) format('woff'); }
+@font-face { font-family: 'u10800'; src: url(../resources/fonts/u10800.woff) format('woff'); }
+@font-face { font-family: 'u10c00'; src: url(../resources/fonts/u10c00.woff) format('woff'); }
+@font-face { font-family: 'u11000'; src: url(../resources/fonts/u11000.woff) format('woff'); }
+@font-face { font-family: 'u11400'; src: url(../resources/fonts/u11400.woff) format('woff'); }
+@font-face { font-family: 'u11800'; src: url(../resources/fonts/u11800.woff) format('woff'); }
+@font-face { font-family: 'u11c00'; src: url(../resources/fonts/u11c00.woff) format('woff'); }
+@font-face { font-family: 'u12000'; src: url(../resources/fonts/u12000.woff) format('woff'); }
+@font-face { font-family: 'u12400'; src: url(../resources/fonts/u12400.woff) format('woff'); }
+@font-face { font-family: 'u12800'; src: url(../resources/fonts/u12800.woff) format('woff'); }
+@font-face { font-family: 'u12c00'; src: url(../resources/fonts/u12c00.woff) format('woff'); }
+@font-face { font-family: 'u13000'; src: url(../resources/fonts/u13000.woff) format('woff'); }
+@font-face { font-family: 'u13400'; src: url(../resources/fonts/u13400.woff) format('woff'); }
+@font-face { font-family: 'u13800'; src: url(../resources/fonts/u13800.woff) format('woff'); }
+@font-face { font-family: 'u13c00'; src: url(../resources/fonts/u13c00.woff) format('woff'); }
+@font-face { font-family: 'u14000'; src: url(../resources/fonts/u14000.woff) format('woff'); }
+@font-face { font-family: 'u14400'; src: url(../resources/fonts/u14400.woff) format('woff'); }
+@font-face { font-family: 'u14800'; src: url(../resources/fonts/u14800.woff) format('woff'); }
+@font-face { font-family: 'u14c00'; src: url(../resources/fonts/u14c00.woff) format('woff'); }
+@font-face { font-family: 'u15000'; src: url(../resources/fonts/u15000.woff) format('woff'); }
+@font-face { font-family: 'u15400'; src: url(../resources/fonts/u15400.woff) format('woff'); }
+@font-face { font-family: 'u15800'; src: url(../resources/fonts/u15800.woff) format('woff'); }
+@font-face { font-family: 'u15c00'; src: url(../resources/fonts/u15c00.woff) format('woff'); }
+@font-face { font-family: 'u16000'; src: url(../resources/fonts/u16000.woff) format('woff'); }
+@font-face { font-family: 'u16400'; src: url(../resources/fonts/u16400.woff) format('woff'); }
+@font-face { font-family: 'u16800'; src: url(../resources/fonts/u16800.woff) format('woff'); }
+@font-face { font-family: 'u16c00'; src: url(../resources/fonts/u16c00.woff) format('woff'); }
+@font-face { font-family: 'u17000'; src: url(../resources/fonts/u17000.woff) format('woff'); }
+@font-face { font-family: 'u17400'; src: url(../resources/fonts/u17400.woff) format('woff'); }
+@font-face { font-family: 'u17800'; src: url(../resources/fonts/u17800.woff) format('woff'); }
+@font-face { font-family: 'u17c00'; src: url(../resources/fonts/u17c00.woff) format('woff'); }
+@font-face { font-family: 'u18000'; src: url(../resources/fonts/u18000.woff) format('woff'); }
+@font-face { font-family: 'u18400'; src: url(../resources/fonts/u18400.woff) format('woff'); }
+@font-face { font-family: 'u18800'; src: url(../resources/fonts/u18800.woff) format('woff'); }
+@font-face { font-family: 'u18c00'; src: url(../resources/fonts/u18c00.woff) format('woff'); }
+@font-face { font-family: 'u19000'; src: url(../resources/fonts/u19000.woff) format('woff'); }
+@font-face { font-family: 'u19400'; src: url(../resources/fonts/u19400.woff) format('woff'); }
+@font-face { font-family: 'u19800'; src: url(../resources/fonts/u19800.woff) format('woff'); }
+@font-face { font-family: 'u19c00'; src: url(../resources/fonts/u19c00.woff) format('woff'); }
+@font-face { font-family: 'u1a000'; src: url(../resources/fonts/u1a000.woff) format('woff'); }
+@font-face { font-family: 'u1a400'; src: url(../resources/fonts/u1a400.woff) format('woff'); }
+@font-face { font-family: 'u1a800'; src: url(../resources/fonts/u1a800.woff) format('woff'); }
+@font-face { font-family: 'u1ac00'; src: url(../resources/fonts/u1ac00.woff) format('woff'); }
+@font-face { font-family: 'u1b000'; src: url(../resources/fonts/u1b000.woff) format('woff'); }
+@font-face { font-family: 'u1b400'; src: url(../resources/fonts/u1b400.woff) format('woff'); }
+@font-face { font-family: 'u1b800'; src: url(../resources/fonts/u1b800.woff) format('woff'); }
+@font-face { font-family: 'u1bc00'; src: url(../resources/fonts/u1bc00.woff) format('woff'); }
+@font-face { font-family: 'u1c000'; src: url(../resources/fonts/u1c000.woff) format('woff'); }
+@font-face { font-family: 'u1c400'; src: url(../resources/fonts/u1c400.woff) format('woff'); }
+@font-face { font-family: 'u1c800'; src: url(../resources/fonts/u1c800.woff) format('woff'); }
+@font-face { font-family: 'u1cc00'; src: url(../resources/fonts/u1cc00.woff) format('woff'); }
+@font-face { font-family: 'u1d000'; src: url(../resources/fonts/u1d000.woff) format('woff'); }
+@font-face { font-family: 'u1d400'; src: url(../resources/fonts/u1d400.woff) format('woff'); }
+@font-face { font-family: 'u1d800'; src: url(../resources/fonts/u1d800.woff) format('woff'); }
+@font-face { font-family: 'u1dc00'; src: url(../resources/fonts/u1dc00.woff) format('woff'); }
+@font-face { font-family: 'u1e000'; src: url(../resources/fonts/u1e000.woff) format('woff'); }
+@font-face { font-family: 'u1e400'; src: url(../resources/fonts/u1e400.woff) format('woff'); }
+@font-face { font-family: 'u1e800'; src: url(../resources/fonts/u1e800.woff) format('woff'); }
+@font-face { font-family: 'u1ec00'; src: url(../resources/fonts/u1ec00.woff) format('woff'); }
+@font-face { font-family: 'u1f000'; src: url(../resources/fonts/u1f000.woff) format('woff'); }
+@font-face { font-family: 'u1f400'; src: url(../resources/fonts/u1f400.woff) format('woff'); }
+@font-face { font-family: 'u1f800'; src: url(../resources/fonts/u1f800.woff) format('woff'); }
+@font-face { font-family: 'u1fc00'; src: url(../resources/fonts/u1fc00.woff) format('woff'); }
+@font-face { font-family: 'u20000'; src: url(../resources/fonts/u20000.woff) format('woff'); }
+@font-face { font-family: 'u20400'; src: url(../resources/fonts/u20400.woff) format('woff'); }
+@font-face { font-family: 'u20800'; src: url(../resources/fonts/u20800.woff) format('woff'); }
+@font-face { font-family: 'u20c00'; src: url(../resources/fonts/u20c00.woff) format('woff'); }
+@font-face { font-family: 'u21000'; src: url(../resources/fonts/u21000.woff) format('woff'); }
+@font-face { font-family: 'u21400'; src: url(../resources/fonts/u21400.woff) format('woff'); }
+@font-face { font-family: 'u21800'; src: url(../resources/fonts/u21800.woff) format('woff'); }
+@font-face { font-family: 'u21c00'; src: url(../resources/fonts/u21c00.woff) format('woff'); }
+@font-face { font-family: 'u22000'; src: url(../resources/fonts/u22000.woff) format('woff'); }
+@font-face { font-family: 'u22400'; src: url(../resources/fonts/u22400.woff) format('woff'); }
+@font-face { font-family: 'u22800'; src: url(../resources/fonts/u22800.woff) format('woff'); }
+@font-face { font-family: 'u22c00'; src: url(../resources/fonts/u22c00.woff) format('woff'); }
+@font-face { font-family: 'u23000'; src: url(../resources/fonts/u23000.woff) format('woff'); }
+@font-face { font-family: 'u23400'; src: url(../resources/fonts/u23400.woff) format('woff'); }
+@font-face { font-family: 'u23800'; src: url(../resources/fonts/u23800.woff) format('woff'); }
+@font-face { font-family: 'u23c00'; src: url(../resources/fonts/u23c00.woff) format('woff'); }
+@font-face { font-family: 'u24000'; src: url(../resources/fonts/u24000.woff) format('woff'); }
+@font-face { font-family: 'u24400'; src: url(../resources/fonts/u24400.woff) format('woff'); }
+@font-face { font-family: 'u24800'; src: url(../resources/fonts/u24800.woff) format('woff'); }
+@font-face { font-family: 'u24c00'; src: url(../resources/fonts/u24c00.woff) format('woff'); }
+@font-face { font-family: 'u25000'; src: url(../resources/fonts/u25000.woff) format('woff'); }
+@font-face { font-family: 'u25400'; src: url(../resources/fonts/u25400.woff) format('woff'); }
+@font-face { font-family: 'u25800'; src: url(../resources/fonts/u25800.woff) format('woff'); }
+@font-face { font-family: 'u25c00'; src: url(../resources/fonts/u25c00.woff) format('woff'); }
+@font-face { font-family: 'u26000'; src: url(../resources/fonts/u26000.woff) format('woff'); }
+@font-face { font-family: 'u26400'; src: url(../resources/fonts/u26400.woff) format('woff'); }
+@font-face { font-family: 'u26800'; src: url(../resources/fonts/u26800.woff) format('woff'); }
+@font-face { font-family: 'u26c00'; src: url(../resources/fonts/u26c00.woff) format('woff'); }
+@font-face { font-family: 'u27000'; src: url(../resources/fonts/u27000.woff) format('woff'); }
+@font-face { font-family: 'u27400'; src: url(../resources/fonts/u27400.woff) format('woff'); }
+@font-face { font-family: 'u27800'; src: url(../resources/fonts/u27800.woff) format('woff'); }
+@font-face { font-family: 'u27c00'; src: url(../resources/fonts/u27c00.woff) format('woff'); }
+@font-face { font-family: 'u28000'; src: url(../resources/fonts/u28000.woff) format('woff'); }
+@font-face { font-family: 'u28400'; src: url(../resources/fonts/u28400.woff) format('woff'); }
+@font-face { font-family: 'u28800'; src: url(../resources/fonts/u28800.woff) format('woff'); }
+@font-face { font-family: 'u28c00'; src: url(../resources/fonts/u28c00.woff) format('woff'); }
+@font-face { font-family: 'u29000'; src: url(../resources/fonts/u29000.woff) format('woff'); }
+@font-face { font-family: 'u29400'; src: url(../resources/fonts/u29400.woff) format('woff'); }
+@font-face { font-family: 'u29800'; src: url(../resources/fonts/u29800.woff) format('woff'); }
+@font-face { font-family: 'u29c00'; src: url(../resources/fonts/u29c00.woff) format('woff'); }
+@font-face { font-family: 'u2a000'; src: url(../resources/fonts/u2a000.woff) format('woff'); }
+@font-face { font-family: 'u2a400'; src: url(../resources/fonts/u2a400.woff) format('woff'); }
+@font-face { font-family: 'u2a800'; src: url(../resources/fonts/u2a800.woff) format('woff'); }
+@font-face { font-family: 'u2ac00'; src: url(../resources/fonts/u2ac00.woff) format('woff'); }
+@font-face { font-family: 'u2b000'; src: url(../resources/fonts/u2b000.woff) format('woff'); }
+@font-face { font-family: 'u2b400'; src: url(../resources/fonts/u2b400.woff) format('woff'); }
+@font-face { font-family: 'u2b800'; src: url(../resources/fonts/u2b800.woff) format('woff'); }
+@font-face { font-family: 'u2bc00'; src: url(../resources/fonts/u2bc00.woff) format('woff'); }
+@font-face { font-family: 'u2c000'; src: url(../resources/fonts/u2c000.woff) format('woff'); }
+@font-face { font-family: 'u2c400'; src: url(../resources/fonts/u2c400.woff) format('woff'); }
+@font-face { font-family: 'u2c800'; src: url(../resources/fonts/u2c800.woff) format('woff'); }
+@font-face { font-family: 'u2cc00'; src: url(../resources/fonts/u2cc00.woff) format('woff'); }
+@font-face { font-family: 'u2d000'; src: url(../resources/fonts/u2d000.woff) format('woff'); }
+@font-face { font-family: 'u2d400'; src: url(../resources/fonts/u2d400.woff) format('woff'); }
+@font-face { font-family: 'u2d800'; src: url(../resources/fonts/u2d800.woff) format('woff'); }
+@font-face { font-family: 'u2dc00'; src: url(../resources/fonts/u2dc00.woff) format('woff'); }
+@font-face { font-family: 'u2e000'; src: url(../resources/fonts/u2e000.woff) format('woff'); }
+@font-face { font-family: 'u2e400'; src: url(../resources/fonts/u2e400.woff) format('woff'); }
+@font-face { font-family: 'u2e800'; src: url(../resources/fonts/u2e800.woff) format('woff'); }
+@font-face { font-family: 'u2ec00'; src: url(../resources/fonts/u2ec00.woff) format('woff'); }
+@font-face { font-family: 'u2f000'; src: url(../resources/fonts/u2f000.woff) format('woff'); }
+@font-face { font-family: 'u2f400'; src: url(../resources/fonts/u2f400.woff) format('woff'); }
+@font-face { font-family: 'u2f800'; src: url(../resources/fonts/u2f800.woff) format('woff'); }
+@font-face { font-family: 'u2fc00'; src: url(../resources/fonts/u2fc00.woff) format('woff'); }
+@font-face { font-family: 'ue0000'; src: url(../resources/fonts/ue0000.woff) format('woff'); }
+
+.u0000 { font-family: 'u0000'; }
+.u0400 { font-family: 'u0400'; }
+.u0800 { font-family: 'u0800'; }
+.u0c00 { font-family: 'u0c00'; }
+.u1000 { font-family: 'u1000'; }
+.u1400 { font-family: 'u1400'; }
+.u1800 { font-family: 'u1800'; }
+.u1c00 { font-family: 'u1c00'; }
+.u2000 { font-family: 'u2000'; }
+.u2400 { font-family: 'u2400'; }
+.u2800 { font-family: 'u2800'; }
+.u2c00 { font-family: 'u2c00'; }
+.u3000 { font-family: 'u3000'; }
+.u3400 { font-family: 'u3400'; }
+.u3800 { font-family: 'u3800'; }
+.u3c00 { font-family: 'u3c00'; }
+.u4000 { font-family: 'u4000'; }
+.u4400 { font-family: 'u4400'; }
+.u4800 { font-family: 'u4800'; }
+.u4c00 { font-family: 'u4c00'; }
+.u5000 { font-family: 'u5000'; }
+.u5400 { font-family: 'u5400'; }
+.u5800 { font-family: 'u5800'; }
+.u5c00 { font-family: 'u5c00'; }
+.u6000 { font-family: 'u6000'; }
+.u6400 { font-family: 'u6400'; }
+.u6800 { font-family: 'u6800'; }
+.u6c00 { font-family: 'u6c00'; }
+.u7000 { font-family: 'u7000'; }
+.u7400 { font-family: 'u7400'; }
+.u7800 { font-family: 'u7800'; }
+.u7c00 { font-family: 'u7c00'; }
+.u8000 { font-family: 'u8000'; }
+.u8400 { font-family: 'u8400'; }
+.u8800 { font-family: 'u8800'; }
+.u8c00 { font-family: 'u8c00'; }
+.u9000 { font-family: 'u9000'; }
+.u9400 { font-family: 'u9400'; }
+.u9800 { font-family: 'u9800'; }
+.u9c00 { font-family: 'u9c00'; }
+.ua000 { font-family: 'ua000'; }
+.ua400 { font-family: 'ua400'; }
+.ua800 { font-family: 'ua800'; }
+.uac00 { font-family: 'uac00'; }
+.ub000 { font-family: 'ub000'; }
+.ub400 { font-family: 'ub400'; }
+.ub800 { font-family: 'ub800'; }
+.ubc00 { font-family: 'ubc00'; }
+.uc000 { font-family: 'uc000'; }
+.uc400 { font-family: 'uc400'; }
+.uc800 { font-family: 'uc800'; }
+.ucc00 { font-family: 'ucc00'; }
+.ud000 { font-family: 'ud000'; }
+.ud400 { font-family: 'ud400'; }
+.uf000 { font-family: 'uf000'; }
+.uf400 { font-family: 'uf400'; }
+.uf800 { font-family: 'uf800'; }
+.ufc00 { font-family: 'ufc00'; }
+.u10000 { font-family: 'u10000'; }
+.u10400 { font-family: 'u10400'; }
+.u10800 { font-family: 'u10800'; }
+.u10c00 { font-family: 'u10c00'; }
+.u11000 { font-family: 'u11000'; }
+.u11400 { font-family: 'u11400'; }
+.u11800 { font-family: 'u11800'; }
+.u11c00 { font-family: 'u11c00'; }
+.u12000 { font-family: 'u12000'; }
+.u12400 { font-family: 'u12400'; }
+.u12800 { font-family: 'u12800'; }
+.u12c00 { font-family: 'u12c00'; }
+.u13000 { font-family: 'u13000'; }
+.u13400 { font-family: 'u13400'; }
+.u13800 { font-family: 'u13800'; }
+.u13c00 { font-family: 'u13c00'; }
+.u14000 { font-family: 'u14000'; }
+.u14400 { font-family: 'u14400'; }
+.u14800 { font-family: 'u14800'; }
+.u14c00 { font-family: 'u14c00'; }
+.u15000 { font-family: 'u15000'; }
+.u15400 { font-family: 'u15400'; }
+.u15800 { font-family: 'u15800'; }
+.u15c00 { font-family: 'u15c00'; }
+.u16000 { font-family: 'u16000'; }
+.u16400 { font-family: 'u16400'; }
+.u16800 { font-family: 'u16800'; }
+.u16c00 { font-family: 'u16c00'; }
+.u17000 { font-family: 'u17000'; }
+.u17400 { font-family: 'u17400'; }
+.u17800 { font-family: 'u17800'; }
+.u17c00 { font-family: 'u17c00'; }
+.u18000 { font-family: 'u18000'; }
+.u18400 { font-family: 'u18400'; }
+.u18800 { font-family: 'u18800'; }
+.u18c00 { font-family: 'u18c00'; }
+.u19000 { font-family: 'u19000'; }
+.u19400 { font-family: 'u19400'; }
+.u19800 { font-family: 'u19800'; }
+.u19c00 { font-family: 'u19c00'; }
+.u1a000 { font-family: 'u1a000'; }
+.u1a400 { font-family: 'u1a400'; }
+.u1a800 { font-family: 'u1a800'; }
+.u1ac00 { font-family: 'u1ac00'; }
+.u1b000 { font-family: 'u1b000'; }
+.u1b400 { font-family: 'u1b400'; }
+.u1b800 { font-family: 'u1b800'; }
+.u1bc00 { font-family: 'u1bc00'; }
+.u1c000 { font-family: 'u1c000'; }
+.u1c400 { font-family: 'u1c400'; }
+.u1c800 { font-family: 'u1c800'; }
+.u1cc00 { font-family: 'u1cc00'; }
+.u1d000 { font-family: 'u1d000'; }
+.u1d400 { font-family: 'u1d400'; }
+.u1d800 { font-family: 'u1d800'; }
+.u1dc00 { font-family: 'u1dc00'; }
+.u1e000 { font-family: 'u1e000'; }
+.u1e400 { font-family: 'u1e400'; }
+.u1e800 { font-family: 'u1e800'; }
+.u1ec00 { font-family: 'u1ec00'; }
+.u1f000 { font-family: 'u1f000'; }
+.u1f400 { font-family: 'u1f400'; }
+.u1f800 { font-family: 'u1f800'; }
+.u1fc00 { font-family: 'u1fc00'; }
+.u20000 { font-family: 'u20000'; }
+.u20400 { font-family: 'u20400'; }
+.u20800 { font-family: 'u20800'; }
+.u20c00 { font-family: 'u20c00'; }
+.u21000 { font-family: 'u21000'; }
+.u21400 { font-family: 'u21400'; }
+.u21800 { font-family: 'u21800'; }
+.u21c00 { font-family: 'u21c00'; }
+.u22000 { font-family: 'u22000'; }
+.u22400 { font-family: 'u22400'; }
+.u22800 { font-family: 'u22800'; }
+.u22c00 { font-family: 'u22c00'; }
+.u23000 { font-family: 'u23000'; }
+.u23400 { font-family: 'u23400'; }
+.u23800 { font-family: 'u23800'; }
+.u23c00 { font-family: 'u23c00'; }
+.u24000 { font-family: 'u24000'; }
+.u24400 { font-family: 'u24400'; }
+.u24800 { font-family: 'u24800'; }
+.u24c00 { font-family: 'u24c00'; }
+.u25000 { font-family: 'u25000'; }
+.u25400 { font-family: 'u25400'; }
+.u25800 { font-family: 'u25800'; }
+.u25c00 { font-family: 'u25c00'; }
+.u26000 { font-family: 'u26000'; }
+.u26400 { font-family: 'u26400'; }
+.u26800 { font-family: 'u26800'; }
+.u26c00 { font-family: 'u26c00'; }
+.u27000 { font-family: 'u27000'; }
+.u27400 { font-family: 'u27400'; }
+.u27800 { font-family: 'u27800'; }
+.u27c00 { font-family: 'u27c00'; }
+.u28000 { font-family: 'u28000'; }
+.u28400 { font-family: 'u28400'; }
+.u28800 { font-family: 'u28800'; }
+.u28c00 { font-family: 'u28c00'; }
+.u29000 { font-family: 'u29000'; }
+.u29400 { font-family: 'u29400'; }
+.u29800 { font-family: 'u29800'; }
+.u29c00 { font-family: 'u29c00'; }
+.u2a000 { font-family: 'u2a000'; }
+.u2a400 { font-family: 'u2a400'; }
+.u2a800 { font-family: 'u2a800'; }
+.u2ac00 { font-family: 'u2ac00'; }
+.u2b000 { font-family: 'u2b000'; }
+.u2b400 { font-family: 'u2b400'; }
+.u2b800 { font-family: 'u2b800'; }
+.u2bc00 { font-family: 'u2bc00'; }
+.u2c000 { font-family: 'u2c000'; }
+.u2c400 { font-family: 'u2c400'; }
+.u2c800 { font-family: 'u2c800'; }
+.u2cc00 { font-family: 'u2cc00'; }
+.u2d000 { font-family: 'u2d000'; }
+.u2d400 { font-family: 'u2d400'; }
+.u2d800 { font-family: 'u2d800'; }
+.u2dc00 { font-family: 'u2dc00'; }
+.u2e000 { font-family: 'u2e000'; }
+.u2e400 { font-family: 'u2e400'; }
+.u2e800 { font-family: 'u2e800'; }
+.u2ec00 { font-family: 'u2ec00'; }
+.u2f000 { font-family: 'u2f000'; }
+.u2f400 { font-family: 'u2f400'; }
+.u2f800 { font-family: 'u2f800'; }
+.u2fc00 { font-family: 'u2fc00'; }
+.ue0000 { font-family: 'ue0000'; }
+
+@keyframes caret-animation {
+    0% { opacity: 1; }
+    49.99% { opacity: 1; }
+    50% { opacity: 0; }
+    99.99% { opacity: 0; }
+}
+
+@media screen and (max-width: 1050px) {
+    #index-container {
+        display: none;
+    }
+}
+
+.theme-dark {
+    --color-dark: #181b1f;
+    --color-primary: #212529;
+    --color-secondary: #2b2f36;
+    --color-tertiary: #31353c;
+    --color-border: #3e424a;
+    --color-focus: #007ACC;
+    --color-theme: #007ACC;
+    --color-code: #e8b040;
+    --color-text-primary: #f8f4f4;
+    --color-text-secondary: #dcdcdc;
+    --color-text-tertiary: #9098a0;
+    --color-text-dim: #60646c;
+    --color-selection: rgba(34, 176, 233, .2);
+}
+
+html {
+    background-color: var(--color-primary);
+    color: var(--color-text-primary);
+    -webkit-user-select: none;
+    font-size: 14px;
+    font-family: 'Segoe UI', sans-serif;
+
+    --mono-font: 'DejaVu Sans Mono', 'Consolas', monospace;
+    --sans-font: 'Segoe UI', sans-serif;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+}
+
+input {
+    background-color: var(--color-secondary);
+    border: .5px solid var(--color-border);
+    color: var(--color-text-secondary);
+    font: inherit;
+}
+
+input:focus {
+    border-color: var(--color-focus);
+    outline: none;
+}
+
+input::selection {
+    background-color: var(--color-selection);
+}
+
+::-webkit-scrollbar {
+    width: 14px;
+}
+
+::-webkit-scrollbar-corner {
+    background: #a0a4ac20;
+}
+
+::-webkit-scrollbar-track
+{
+    background: #a0a4ac20;
+}
+
+::-webkit-scrollbar-track:disabled
+{
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb
+{
+    background: #a0a4ac40;
+}
+
+::-webkit-scrollbar-thumb:hover
+{
+    background: #a0a4aca0;
+}
+
+::-webkit-scrollbar-thumb:active
+{
+    background: #a0a4ac;
+}
+
+.dim-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+.dim-scrollbar::-webkit-scrollbar-track
+{
+    background: transparent;
+}
+
+.dim-scrollbar::-webkit-scrollbar-thumb
+{
+    background: #a0a4ac20;
+}
+
+.dim-scrollbar::-webkit-scrollbar-thumb:hover
+{
+    background: #a0a4ac40;
+}
+
+.dim-scrollbar::-webkit-scrollbar-thumb:active
+{
+    background: #a0a4aca0;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    font-family: var(--sans-font);
+    overflow: hidden;
+}
+
+#main-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    overflow-y: scroll;
+}
+
+#search-container {
+    height: 50px;
+    margin: 20px 0 0 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#search-flex {
+    display: flex;
+    width: 100%;
+    max-width: 900px;
+}
+
+#search-input {
+    height: 30px;
+    width: 100%;
+    padding: 0 8px;
+    flex-grow: 1;
+}
+
+#table-container {
+    width: 100%;
+    max-width: 900px;
+    margin-right: -14px;
+    display: flex;
+    flex-direction: column;
+}
+
+#tooltip-container {
+    display: none;
+    position: absolute;
+    width: 380px;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-primary);
+    z-index: 1000;
+}
+
+#tooltip {
+    margin: 15px;
+    width: 350px;
+}
+
+#editor-container {
+    height: 100px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#status-bar {
+    background-color: var(--color-theme);
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.code-block {
+    margin-top: 10px;
+}
+
+.code-block-header {
+    margin: 0 5px 0 5px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.code-block-header:hover {
+    background-color: var(--color-tertiary);
+}
+
+.code-block-header:active {
+    background-color: var(--color-border);
+}
+
+.code-block-rows-container {
+    max-height: 0; /* will be changed by js */
+    overflow-y: hidden;
+}
+
+.code-block-rows {
+    padding-top: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.code-block-header-expander {
+    width: 30px;
+    font-size: 24px;
+    font-weight: 200;
+}
+
+.code-block-header-expander::after {
+    content: '+';
+}
+
+.code-block[data-expanded] .code-block-header-expander::after {
+    content: '−';
+}
+
+.code-block-header-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.code-block-range {
+    color: var(--color-text-tertiary);
+    width: 100px;
+    margin-top: -3px;
+    margin-bottom: -5px;
+}
+
+.code-block-name {
+    font-size: 18px;
+    font-weight: 200;
+}
+
+.code-block-row {
+    display: flex;
+}
+
+.code-point {
+    width: calc(6.25% - 12px);
+    margin: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.code-point-char {
+    font-size: 24px;
+    height: 50px;
+    width: 100%;
+    border: 1pt solid var(--color-secondary);
+    background-color: var(--color-secondary);
+    color: var(--color-text-secondary);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-kerning: none;
+}
+
+.code-point[data-disabled] .code-point-char {
+    opacity: .2;
+}
+
+.code-point:not([data-disabled]):hover .code-point-char {
+    background-color: var(--color-border);
+}
+
+.code-point:not([data-disabled]):hover .code-point-number {
+    color: var(--color-text-tertiary);
+}
+
+.code-point-number {
+    font-size: 12px;
+    color: var(--color-text-dim);
+}
+
+.code-block-sub-expander {
+    height: 24px;
+    display: flex;
+    align-items: center;
+    margin: 0px 5px 3px 5px;
+    padding-left: 10px;
+}
+
+.code-block-sub-expander:hover {
+    background-color: var(--color-secondary);
+}
+
+.code-block-sub-expander:active {
+    background-color: var(--color-border);
+}
+
+.code-block-sub-expander::after {
+    content: attr(data-text);
+    color: var(--color-text-tertiary);
+    font-size: 14px;
+}
+
+.code-block-sub-expander-icon {
+    width: 30px;
+    font-size: 20px;
+    font-weight: 200;
+    margin-top: -4px;
+}
+
+.code-block-sub-expander-icon::after {
+    content: '+';
+}
+
+.code-block-sub-expander[data-expanded] .code-block-sub-expander-icon::after {
+    content: '−';
+}
+
+.code-block-sub-rows {
+    max-height: 0;
+    padding-bottom: 5px;
+    overflow-y: hidden;
+}
+
+.tooltip-char-code {
+    color: var(--color-code);
+    font-size: 15px;
+    margin-top: -5px;
+    margin-bottom: -2px;
+    -webkit-user-select: text;
+}
+
+.tooltip-char-name {
+    font-size: 18px;
+    font-weight: 200;
+    line-height: 18px;
+    margin-bottom: 8px;
+    -webkit-user-select: text;
+}
+
+.tooltip-char-property-header {
+    margin: 3px 0 -3px 0;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    font-size: 11px;
+    -webkit-user-select: text;
+}
+
+.tooltip-char-property {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    -webkit-user-select: text;
+}
+
+span.dim {
+    color: var(--color-text-tertiary);
+}
+
+span.code {
+    color: var(--color-code);
+    font-size: 12px;
+    font-family: var(--mono-font);
+    background-color: var(--color-tertiary);
+    border-radius: 3px;
+    padding: 2px 5px;
+}
+
+#tooltip span.code {
+    display: inline-block;
+    margin: 5px 7px 2px 0;
+}
+
+#tooltip ::selection {
+    background-color: var(--color-selection);
+}
+
+#tooltip-container .code-point-char {
+    font-size: 54px;
+    height: 100px;
+    width: 100px;
+    margin: 5px 0 15px 15px;
+    float: right;
+}
+
+#tooltip-container .code-point-char:hover {
+    background-color: var(--color-border);
+}
+
+.tooltip-code-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#tooltip-container .tooltip-code-list .code-point {
+    margin: 5px 10px 0 0;
+    width: 35px;
+}
+
+#tooltip-container .tooltip-code-list .code-point-char {
+    font-size: 20px;
+    height: 35px;
+    width: 35px;
+    margin: 0;
+}
+
+.code-point[data-title] {
+    position: relative;
+}
+
+.code-point[data-title]::after {
+    opacity: 0;
+    visibility: hidden;
+    content: attr(data-title);
+    padding: 4px 8px 5px 8px;
+    color: var(--color-text-secondary);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    white-space: nowrap;
+    z-index: 2;
+    background: var(--color-primary);
+    border: 1px solid var(--color-border);
+    transition: opacity 200ms;
+}
+
+.code-point[data-title]:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+.emoji {
+    margin-bottom: 8%;
+}
+
+#index-container {
+    width: 0px;
+}
+
+#index {
+    position: fixed;
+    height: calc(100% - 200px);
+    margin: 0 0 0 20px;
+    width: 60px;
+    overflow-y: scroll;
+}
+
+#index::-webkit-scrollbar {
+    width: 0;
+}
+
+#index:hover::-webkit-scrollbar {
+    width: 8px;
+}
+
+#index-items {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    min-height: 100%;
+}
+
+.index-item {
+    width: 45px;
+    height: 20px;
+    padding: 0px 5px 1px 0;
+    text-align: right;
+    color: var(--color-text-dim);
+    font-size: 15px;
+    cursor: pointer;
+    transition: font-size 400ms, height 400ms;
+}
+
+.index-item.index-item-active {
+    height: 24px;
+    color: var(--color-text-secondary);
+    font-size: 20px;
+    font-weight: 200;
+}
+
+span.index-zeroes {
+    color: var(--color-text-dim);
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.index-item-active span.index-zeroes {
+    color: var(--color-text-tertiary);
+}
+
+.index-item:hover {
+    color: var(--color-text-tertiary);
+}
+
+.index-item.index-item-active:hover {
+    color: var(--color-text-secondary);
+}
+
+.index-item:hover span.index-zeroes {
+    color: var(--color-text-tertiary);
+}
+
+#editor {
+    height: 80px;
+    margin: 10px 15px;
+    outline: .5px solid var(--color-border);
+    background-color: var(--color-primary);
+    padding: 5px;
+    overflow-x: scroll;
+}
+
+#editor[data-focus] {
+    outline: .5px solid var(--color-focus); 
+}
+
+#editor-content {
+    cursor: text;
+    height: 100%;
+    display: flex;
+}
+
+#editor-chars {
+    display: flex;
+    align-items: center;
+}
+
+#editor-chars .code-point {
+    margin: 0 5px 0 5px;
+    width: 35px;
+}
+
+#editor-chars .code-point-char {
+    font-size: 20px;
+    height: 35px;
+    width: 35px;
+    margin: 0;
+}
+
+#editor-chars .code-point:hover .code-point-char {
+    background-color: var(--color-secondary);
+}
+
+#editor-chars .code-point:hover .code-point-number {
+    color: var(--color-text-dim);
+}
+
+.caret {
+    width: 2px;
+    margin: 0 -1px 0 -1px;
+    height: 100%;
+    background-color: var(--color-text-tertiary);
+    opacity: 0;
+    position: relative;
+    z-index: 2;
+    /* caret contains the hidden input box */
+    display: flex;
+    align-items: flex-end;
+}
+
+#editor[data-focus] .caret[data-active] {
+    animation: 1s caret-animation 0s infinite;
+}
+
+#editor-input {
+    height: 5px;
+    width: 10000px; /* 0px won't work with ime */
+    overflow-x: hidden;
+    font-size: 1px;
+    opacity: 0;
+}
+
+.editor-selection-container {
+    width: 0;
+    height: 100%;
+}
+
+.editor-selection {
+    position: relative;
+    height: 100%;
+    z-index: 1;
+}
+
+#editor[data-focus] .editor-selection {
+    background-color: var(--color-selection);
+}

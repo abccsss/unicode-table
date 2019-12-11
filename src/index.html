@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html class="theme-dark">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="script-src 'self';" />
+<title>Unicode Table</title>
+<link rel="stylesheet" href="./index.css">
+<script type="module" src="./index.js"></script>
+</head>
+<body>
+    <div id="root">
+        <div id="search-container">
+            <div id="search-flex">
+                <input id="search-input" type="text" placeholder="Search here... (not yet implemented)" tabindex="2" >
+            </div>
+        </div>
+
+        <div id="main-container">
+            <div id="table-container">
+                <div id="tooltip-container"></div>
+            </div>
+            <div id="index-container">
+                <div id="index" class="dim-scrollbar">
+                    <div id="index-items"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="editor-container">
+            <div id="editor">
+                <div id="editor-content">
+                    <div class="caret" data-active>
+                        <textarea id="editor-input" tabindex="1"></textarea>
+                    </div>
+                    <div class="editor-selection-container">
+                        <div class="editor-selection"></div>
+                    </div>
+                    <div id="editor-chars"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="status-bar" >
+        </div>
+    </div>
+</body>
+</html>
