@@ -371,8 +371,18 @@ const updateEditorChars = () => {
 const changeText = newText => {
     if (newText === undefined) {
         newText = $('#editor-input').val();
+        if (newText === '\ue142') { // see below
+            return;
+        }
     }
-    $('#editor-input').val('');
+
+    // insert magic text into #editor-input to push to its undo stack, and then clear it
+    // prevent its undo stack being used up (unable to fire undo event when user presses ctrl+z)
+    $('#editor-input').focus().val('');
+    document.execCommand('insertText', false, '\ue142');
+    setTimeout(() => {
+        $('#editor-input').val('');
+    }, 0);
 
     if (editorText.length + newText.length > maxLength) {
         var truncatedLength = maxLength - editorText.length;
