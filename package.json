@@ -3,6 +3,10 @@
   "productName": "unicode-table",
   "version": "0.1.0",
   "description": "Unicode character table",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/abccsss/unicode-table.git"
+  },
   "main": "src/main.ts",
   "scripts": {
     "prestart": "tsc",
