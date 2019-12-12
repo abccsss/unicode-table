@@ -15,14 +15,28 @@
             </div>
         </div>
 
+        <div id="tabs-container">
+            <div id="tabs">
+                <div class="tab" data-header="Table" data-selected></div>
+                <div class="tab" data-header="Palettes"></div>
+                <div class="tab" data-header="Search"></div>
+            </div>
+        </div>
+
         <div id="main-container">
-            <div id="table-container">
+            <div id="table-container" data-tab="Table">
                 <div id="tooltip-container"></div>
             </div>
-            <div id="index-container">
+            <div id="index-container" data-tab="Table">
                 <div id="index" class="dim-scrollbar">
                     <div id="index-items"></div>
                 </div>
+            </div>
+            <div id="palettes-container" data-tab="Palettes">
+                
+            </div>
+            <div id="results-container" data-tab="Search">
+                
             </div>
         </div>
 

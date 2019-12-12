@@ -41,26 +41,26 @@ let editorText = '';
 let undoStack = [], redoStack = [];
 let editorScrollingByDrag = false;
 
-$('#editor').on('focusin', () => {
-    $('#editor').attr('data-focus', true);
+$('#editor').on('focusin', function () {
+    $(this).attr('data-focus', true);
 });
 
-$('#editor').on('focusout', () => {
+$('#editor').on('focusout', function () {
     if (dragStart === -1) { 
-        $('#editor').attr('data-focus', null);
+        $(this).attr('data-focus', null);
     }
 });
 
 // all text changes are done by calling changeText(), except undo or redo
-$('#editor-input').on('input', (event) => {
+$('#editor-input').on('input', function (event) {
     switch (event.originalEvent.inputType) {
         case 'historyUndo':
             onUndo();
-            $('#editor-input').val('');
+            $(this).val('');
             break;
         case 'historyRedo':
             onRedo();
-            $('#editor-input').val('');
+            $(this).val('');
             break;
         case 'insertFromPaste':
             navigator.clipboard.readText().then(value => {
@@ -70,34 +70,34 @@ $('#editor-input').on('input', (event) => {
             });
             break;
         default:
-            if (!$('#editor-input').attr('data-composing')) {
+            if (!$(this).attr('data-composing')) {
                 changeText();
             }
             break;
     }
 });
 
-$('#editor-input').on('copy cut', () => {
+$('#editor-input').on('copy cut', function () {
     var text = editorText.substring(stringIndex(editorText, selection.start), stringIndex(editorText, selection.end));
-    $('#editor-input').val(' ').select(); // so that cutting triggers an input event
+    $(this).val(' ').select(); // so that cutting triggers an input event
     setTimeout(() => {
         navigator.clipboard.writeText(text);
-        $('#editor-input').val('');
+        $(this).val('');
     }, 0);
 });
 
 // work with IME
-$('#editor-input').on('compositionstart', () => {
-    $('#editor-input').attr('data-composing', true);
+$('#editor-input').on('compositionstart', function () {
+    $(this).attr('data-composing', true);
 });
 
-$('#editor-input').on('compositionend', () => {
-    $('#editor-input').attr('data-composing', null);
+$('#editor-input').on('compositionend', function () {
+    $(this).attr('data-composing', null);
     changeText();
 });
 
 // selection
-$('#editor-content').on('mousedown', event => {
+$('#editor-content').on('mousedown', function (event) {
     mouseEvent = event;
     
     if (event.buttons === 1) { // left button
@@ -124,7 +124,7 @@ $('#editor-content').on('mousedown', event => {
     }
 });
 
-$('html').on('mouseup', () => {
+$('html').on('mouseup', function () {
     mouseEvent = event;
     
     if (dragStart >= 0) {
@@ -135,13 +135,13 @@ $('html').on('mouseup', () => {
     $('body').css('cursor', '');
 });
 
-$('html').on('mousemove', event => {
+$('html').on('mousemove', function (event) {
     mouseEvent = event;
     
     onMouseMove(event, true);
 });
 
-$('#editor-input').on('keydown', event => {
+$('#editor-input').on('keydown', function (event) {
     // TODO: Cmd+arrow on mac
     switch (event.key) {
         case 'ArrowLeft':
@@ -222,8 +222,8 @@ $('#editor-input').on('keydown', event => {
 });
 
 // index
-$('#main-container').scroll(() => {
-    var viewHeight = $('#main-container').height();
+$('#main-container').scroll(function () {
+    var viewHeight = $(this).height();
     var $block = $('.code-block');
     $block = $block.filter(index => 
         $($block[index]).position().top <= viewHeight / 2
@@ -263,7 +263,7 @@ $('#main-container').scroll(() => {
 });
 
 // popup
-$('#popup-container').click(event => {
+$('#popup-container').click(function (event) {
     if (event.target.id === 'popup-container') { // clicking outside popup
         hidePopup();
     }
@@ -271,11 +271,25 @@ $('#popup-container').click(event => {
 
 $('.popup-button').click(() => hidePopup());
 
-$(document).on('click', 'a[href^="http"]', event => {
+$(document).on('click', 'a[href^="http"]', function (event) {
     event.preventDefault();
-    var $target = $(event.target);
-    if ($target.filter('a').length === 0) $target = $target.parents('a[href^="http"]');
-    shell.openExternal($target.attr('href'));
+    shell.openExternal($(this).attr('href'));
+});
+
+// tabs
+$('.tab').click(function () {
+    var $tab = $(this);
+    if ($tab.attr('data-selected')) return;
+
+    $('.tab[data-selected]').data('scroll', $('#main-container').scrollTop());
+
+    $('.tab').attr('data-selected', null);
+    $tab.attr('data-selected', true);
+    var header = $tab.attr('data-header');
+    
+    $('[data-tab]').css('display', 'none');
+    $(`[data-tab=${header}]`).css('display', 'flex');
+    $('#main-container').scrollTop($tab.data('scroll'));
 });
 
 const showPopup = (header, html) => {
@@ -299,9 +313,9 @@ const hidePopup = () => {
     });
 }
 
-const onCharHover = (sender, isEditor) => {
+const onCharHover = (event, isEditor) => {
     setTimeoutShow = setTimeout(() => {
-        showTooltip(sender.target, {
+        showTooltip(event.target, {
             isEditor: isEditor
         });
     }, mouseHoverDelay);
@@ -320,7 +334,7 @@ const getEditorChar = code => {
         <div class="code-point-char">${getHtmlChar(code)}</div>
         <div class="code-point-number"><div>${toHex(code)}</div></div>
     </div>`);
-    div.hover(sender => onCharHover(sender, true), onCharHoverOut);
+    div.hover(event => onCharHover(event, true), onCharHoverOut);
     return div;
 }
 
@@ -964,3 +978,7 @@ ipcRenderer.on('command', (_event, arg) => {
             break;
     }
 });
+function newFunction() {
+    console.log(this);
+}
+

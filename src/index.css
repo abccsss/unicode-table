@@ -388,9 +388,8 @@
 }
 
 .theme-dark {
-    --color-dark: #181b1f;
-    --color-primary: #212529;
-    --color-secondary: #2b2f36;
+    --color-primary: #181b1f;
+    --color-secondary: #262a30;
     --color-tertiary: #31353c;
     --color-border: #3e424a;
     --color-focus: #007ACC;
@@ -512,11 +511,12 @@ input::selection {
 }
 
 #search-container {
-    height: 50px;
+    height: 30px;
     margin: 20px 0 0 0;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
 }
 
 #search-flex {
@@ -532,12 +532,19 @@ input::selection {
     flex-grow: 1;
 }
 
-#table-container {
+#table-container, #palettes-container, #results-container {
     width: 100%;
     max-width: 900px;
     margin-right: -14px;
-    display: flex;
     flex-direction: column;
+}
+
+#table-container {
+    display: flex;
+}
+
+#palettes-container, #results-container {
+    display: none;
 }
 
 #tooltip-container {
@@ -832,7 +839,7 @@ span.code {
 
 #index {
     position: fixed;
-    height: calc(100% - 200px);
+    height: calc(100% - 240px);
     margin: 0 0 0 20px;
     width: 60px;
     overflow-y: scroll;
@@ -1026,4 +1033,42 @@ span.index-zeroes {
 
 .popup-button:hover {
     background-color: var(--color-border);
+}
+
+#tabs-container {
+    height: 40px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+}
+
+#tabs {
+    display: flex;
+    margin-top: 5px;
+}
+
+.tab {
+    padding: 0 10px;
+    cursor: pointer;
+}
+
+.tab::after {
+    color: var(--color-text-tertiary);
+    font-size: 12px;
+    content: attr(data-header);
+    text-transform: uppercase;
+    border-bottom: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    padding-top: 5px;
+    height: 24px;
+}
+
+.tab:hover::after {
+    color: var(--color-text-secondary);
+}
+
+.tab[data-selected]::after {
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-text-secondary);
 }
