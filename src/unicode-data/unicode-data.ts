@@ -239,14 +239,17 @@ export default class UnicodeData {
             var startHundred = Math.floor(start / 0x100),
                 endHundred = Math.floor(end / 0x100);
 
-            if (!this.charData[startHundred])
-                this.charData[startHundred] = [];
-            for (var code = start; code <= end && code < (startHundred + 1) * 0x100; code++) {
-                this.charData[startHundred][code % 0x100] = new UnicodeCharacter({
-                    code: code,
-                    gc: 'Cn',
-                    type: 'reserved'
-                });
+            if (!(start % 0x100 == 0 &&
+                (endHundred > startHundred || end % 0x100 == 0xff || end % 0x10000 == 0xfffd))) {
+                if (!this.charData[startHundred])
+                    this.charData[startHundred] = [];
+                for (var code = start; code <= end && code < (startHundred + 1) * 0x100; code++) {
+                    this.charData[startHundred][code % 0x100] = new UnicodeCharacter({
+                        code: code,
+                        gc: 'Cn',
+                        type: 'reserved'
+                    });
+                }
             }
 
             if (endHundred > startHundred &&
@@ -347,10 +350,13 @@ export default class UnicodeData {
                     var char = charHundred[code % 0x100];
                     if (!char.cf) char.cf = [];
 
-                    result = /\b[0-9A-F]+\b/.exec(input);
-                    result.forEach(item => {
-                        char.cf.push(item);
-                    });
+                    var regex = /\b[0-9A-F]+\b/g, result: RegExpExecArray;
+                    do {
+                        result = regex.exec(input);
+                        if (result) {
+                            char.cf.push(result[0]);
+                        }
+                    } while (result);
                     char.cf.sort((a, b) => parseInt(a, 16) - parseInt(b, 16));
                 }
 
@@ -359,10 +365,13 @@ export default class UnicodeData {
                     var char = charHundred[code % 0x100];
                     var decomp = '';
 
-                    result = /\b[0-9A-F]+\b/.exec(input);
-                    result.forEach(item => {
-                        decomp += String.fromCodePoint(parseInt(item, 16));
-                    });
+                    var regex = /\b[0-9A-F]+\b/g, result: RegExpExecArray;
+                    do {
+                        result = regex.exec(input);
+                        if (result) {
+                            decomp += String.fromCodePoint(parseInt(result[0], 16));
+                        }
+                    } while (result);
                     char.decomp = decomp;
                 }
             }
