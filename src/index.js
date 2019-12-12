@@ -509,7 +509,7 @@ const changeSelection = newSelection => {
         var editorWidth = $editor.width();
         var caretPos = $caret.offset().left - $editor.offset().left;
 
-        if (!editorScrollingByDrag) {
+        if (!editorScrollingByDrag && caretPosition !== 0 && caretPosition !== actualIndex(editorText, editorText.length)) {
             if (caretPos < 30) {
                 $editor.scrollLeft($editor.scrollLeft() + caretPos - 30);
                 editorScrollingByDrag = true;

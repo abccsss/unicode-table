@@ -922,6 +922,7 @@ span.index-zeroes {
 #editor-chars {
     display: flex;
     align-items: center;
+    padding-right: 4px;
 }
 
 #editor-chars .code-point {
