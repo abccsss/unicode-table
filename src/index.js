@@ -1,5 +1,5 @@
 const { Titlebar, Color } = require('custom-electron-titlebar');
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, shell } = require('electron');
 const $ = require('jquery');
 
 // custom title bar
@@ -261,6 +261,43 @@ $('#main-container').scroll(() => {
         });
     }
 });
+
+// popup
+$('#popup-container').click(event => {
+    if (event.target.id === 'popup-container') { // clicking outside popup
+        hidePopup();
+    }
+});
+
+$('.popup-button').click(() => hidePopup());
+
+$(document).on('click', 'a[href^="http"]', event => {
+    event.preventDefault();
+    var $target = $(event.target);
+    if ($target.filter('a').length === 0) $target = $target.parents('a[href^="http"]');
+    shell.openExternal($target.attr('href'));
+});
+
+const showPopup = (header, html) => {
+    $('#popup-header').text(header);
+    $('#popup-content').html(html);
+    $('#popup-container').css('display', 'flex').animate({
+        opacity: 1
+    }, 100);
+}
+
+const hidePopup = () => {
+    if ($('#popup-container').is(':animated')) {
+        return;
+    }
+    $('#popup-container').animate({
+        opacity: 0
+    }, {
+        duration: 100,
+        queue: false,
+        complete: () => $('#popup-container').css('display', 'none')
+    });
+}
 
 const onCharHover = (sender, isEditor) => {
     setTimeoutShow = setTimeout(() => {
@@ -913,6 +950,17 @@ ipcRenderer.on('command', (_event, arg) => {
         case 'selectAll':
         case 'undo':
             document.execCommand(arg.command);
+            break;
+        case 'about':
+            showPopup('Unicode Table', 
+                `Version: 0.1.0<br/>` +
+                `Repository: <a href="https://github.com/abccsss/unicode-table">` +
+                `<span class="code">https://github.com/abccsss/unicode-table</span></a><br/><br/>` +
+                `Unicode: 12.1 (May 2019)<br/>` +
+                `Electron: ${arg.versions['electron']}<br/>` +
+                `Chrome: ${arg.versions['chrome']}<br/>` +
+                `Node.js: ${arg.versions['node']}`
+            );
             break;
     }
 });

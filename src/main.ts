@@ -26,7 +26,7 @@ const menu = Menu.buildFromTemplate([
     {
         label: "Help",
         submenu: [
-            { role: 'about', label: 'About' }
+            { role: 'about', label: 'About', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'about', versions: process.versions }); } }
         ]
     }
 ]);
