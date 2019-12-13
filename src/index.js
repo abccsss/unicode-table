@@ -669,6 +669,7 @@ const onClickSubHeader = $element => {
     if ($element.attr('data-expanded')) {
         $element.attr('data-expanded', null);
         $rows.css('max-height', 0);
+        $rows.find('.char-glowing').stop().removeClass('char-glowing').attr('style', null);
     }
     else {
         $element.attr('data-expanded', 'true');
@@ -774,6 +775,11 @@ const goToChar = (code) => {
 
         $sub.find('.code-block-sub-expander').trigger('click');
         $row = $block.find(`.code-block-row[data-code=${code - code % 0x10}]`);
+    } else {
+        var $subHeader = $row.parents('.code-block-sub').find('.code-block-sub-expander');
+        if (!$subHeader.attr('data-expanded')) {
+            onClickSubHeader($subHeader);
+        }
     }
 
     if ($row.length > 0) {
@@ -781,17 +787,19 @@ const goToChar = (code) => {
 
         // make code point glow
         var $char = $row.find(`.code-point[data-code=${code}] .code-point-char`);
-        $char.css('box-shadow', '0 0 3px 2px rgba(232,176,64,.8)').css('min-width', '3px').animate({
+        $char.stop().addClass('char-glowing')
+            .css('box-shadow', '0 0 3px 2px rgba(232,176,64,.8)').css('min-width', '3px').animate({
             'min-width': '0'
         }, {
             duration: 2000,
+            queue: false,
             step: now => {
                 if (now <= .8) {
                     $char.css('box-shadow', `0 0 3px 2px rgba(232,176,64,${now})`)
                 }
             },
             complete: () => {
-                $char.attr('style', null);
+                $char.removeClass('char-glowing').attr('style', null);
             }
         });
     }
