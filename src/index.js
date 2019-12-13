@@ -788,14 +788,14 @@ const goToChar = (code) => {
         // make code point glow
         var $char = $row.find(`.code-point[data-code=${code}] .code-point-char`);
         $char.stop().addClass('char-glowing')
-            .css('box-shadow', '0 0 3px 2px rgba(232,176,64,.8)').css('min-width', '3px').animate({
+            .css('box-shadow', '0 0 1px 2px rgba(232,176,64,.8)').css('min-width', '3px').animate({
             'min-width': '0'
         }, {
             duration: 2000,
             queue: false,
             step: now => {
                 if (now <= .8) {
-                    $char.css('box-shadow', `0 0 3px 2px rgba(232,176,64,${now})`)
+                    $char.css('box-shadow', `0 0 1px 2px rgba(232,176,64,${now})`)
                 }
             },
             complete: () => {
