@@ -43,10 +43,11 @@ let editorScrollingByDrag = false;
 
 $('#editor').on('focusin', function () {
     $(this).attr('data-focus', true);
+    $(this).removeClass('focus-helper');
 });
 
 $('#editor').on('focusout', function () {
-    if (dragStart === -1) { 
+    if (dragStart === -1 && !$(this).hasClass('focus-helper')) { 
         $(this).attr('data-focus', null);
     }
 });
@@ -686,7 +687,7 @@ const onClickCodePoint = ($element, behaviour) => {
         switch (behaviour) {
             case 'input':
                 changeText(String.fromCodePoint(code));
-                $('#editor-input').focus();
+                $('#editor').addClass('focus-helper');
                 setTimeout(() => {
                     $('#editor-input').focus();
                 }, 0);
@@ -762,7 +763,7 @@ const goToChar = (code) => {
     if (!$block.attr('data-expanded')) {
         onClickHeader($block.find('.code-block-header'), true);
     }
-    var $row = $block.find(`.code-block-row[data-code=${code}]`);
+    var $row = $block.find(`.code-block-row[data-code=${code - code % 0x10}]`);
     if ($row.length === 0) {
         var $sub = $block.find('.code-block-sub');
         $sub = $sub.filter(index => {
@@ -772,9 +773,28 @@ const goToChar = (code) => {
         positionTop = $sub.position().top;
 
         $sub.find('.code-block-sub-expander').trigger('click');
-        $row = $block.find(`.code-block-row[data-code=${code}]`);
+        $row = $block.find(`.code-block-row[data-code=${code - code % 0x10}]`);
     }
-    if ($row.length > 0) positionTop = $row.position().top;
+
+    if ($row.length > 0) {
+        positionTop = $row.position().top;
+
+        // make code point glow
+        var $char = $row.find(`.code-point[data-code=${code}] .code-point-char`);
+        $char.css('box-shadow', '0 0 3px 2px rgba(232,176,64,.8)').css('min-width', '3px').animate({
+            'min-width': '0'
+        }, {
+            duration: 2000,
+            step: now => {
+                if (now <= .8) {
+                    $char.css('box-shadow', `0 0 3px 2px rgba(232,176,64,${now})`)
+                }
+            },
+            complete: () => {
+                $char.attr('style', null);
+            }
+        });
+    }
 
     var $main = $('#main-container');
     $main.scrollTop($main.scrollTop() + positionTop - $main.height() / 2 + 50);
