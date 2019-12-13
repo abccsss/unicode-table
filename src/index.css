@@ -808,10 +808,9 @@ span.code {
     position: relative;
 }
 
-.code-point[data-title]::after {
+.code-point .code-point-title {
     opacity: 0;
     visibility: hidden;
-    content: attr(data-title);
     padding: 4px 8px 5px 8px;
     color: var(--color-text-secondary);
     position: absolute;
@@ -824,7 +823,7 @@ span.code {
     transition: opacity 200ms;
 }
 
-.code-point[data-title]:hover::after {
+.code-point:hover .code-point-title {
     opacity: 1;
     visibility: visible;
 }
@@ -983,6 +982,24 @@ span.index-zeroes {
 
 #editor[data-focus] .editor-selection {
     background-color: var(--color-selection);
+}
+
+#text-preview {
+    position: absolute;
+    left: 15px;
+    bottom: 111px;
+    padding: 0 10px;
+    min-height: 24px;
+    background-color: var(--color-secondary);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    display: none;
+    align-items: center;
+    color: var(--color-text-secondary);
+}
+
+#editor[data-focus] #text-preview {
+    display: flex;
 }
 
 #popup-container {

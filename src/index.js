@@ -313,11 +313,9 @@ const hidePopup = () => {
     });
 }
 
-const onCharHover = (event, isEditor) => {
+const onCharHover = ($element, options) => {
     setTimeoutShow = setTimeout(() => {
-        showTooltip(event.target, {
-            isEditor: isEditor
-        });
+        showTooltip($element, options);
     }, mouseHoverDelay);
 };
 
@@ -334,7 +332,11 @@ const getEditorChar = code => {
         <div class="code-point-char">${getHtmlChar(code)}</div>
         <div class="code-point-number"><div>${toHex(code)}</div></div>
     </div>`);
-    div.hover(event => onCharHover(event, true), onCharHoverOut);
+    div.hover(function () {
+        onCharHover($(this), {
+            isEditor: true
+        });
+    }, onCharHoverOut);
     return div;
 }
 
@@ -371,7 +373,7 @@ const onBackspace = () => {
         changeSelection({ start: --caretPosition, end: selection.end });
     }
     $('#editor-input').val('');
-    changeText();
+    changeText('');
 }
 
 const onDelete = () => {
@@ -379,7 +381,7 @@ const onDelete = () => {
         changeSelection({ start: selection.start, end: ++caretPosition });
     }
     $('#editor-input').val('');
-    changeText();
+    changeText('');
 }
 
 const onSelectAll = () => {
@@ -417,23 +419,33 @@ const updateEditorChars = () => {
         var cp = getEditorChar(code);
         $chars.append(cp);
     }
+
+    if (editorText.length === 0) {
+        $('#text-preview').css('display', 'none');
+    } else {
+        $('#text-preview').removeAttr('style');
+    }
+    $('#text-preview').text(editorText);
 }
 
+// for undo stack to work properly, 'newText' should be undefined IF AND ONLY IF
+// the change is made by user in the input box, and undo stack is already pushed
 const changeText = newText => {
     if (newText === undefined) {
         newText = $('#editor-input').val();
         if (newText === '\ue142') { // see below
             return;
         }
+        $('#editor-input').focus().val('');
+    } else {
+        // insert magic text into #editor-input to push to its undo stack, and then clear it
+        // prevent its undo stack being used up (unable to fire undo event when user presses ctrl+z)
+        $('#editor-input').focus().val('');
+        document.execCommand('insertText', false, '\ue142');
+        setTimeout(() => {
+            $('#editor-input').val('');
+        }, 0);
     }
-
-    // insert magic text into #editor-input to push to its undo stack, and then clear it
-    // prevent its undo stack being used up (unable to fire undo event when user presses ctrl+z)
-    $('#editor-input').focus().val('');
-    document.execCommand('insertText', false, '\ue142');
-    setTimeout(() => {
-        $('#editor-input').val('');
-    }, 0);
 
     if (editorText.length + newText.length > maxLength) {
         var truncatedLength = maxLength - editorText.length;
@@ -535,25 +547,21 @@ const changeSelection = newSelection => {
     }
 }
 
-const showTooltip = (target, options) => {
-    var $sender = $(target);
-    if ($sender.filter('.code-point').length === 0) {
-        $sender = $sender.parents('.code-point');
-    }
-    var code = $sender.data('code');
+const showTooltip = ($element, options) => {
+    var code = $element.data('code');
 
     // when typing in editor, position is (0, 0) immediately after text change
     // in this case, wait for the next round of hover event
-    if ($sender.position().left === 0) {
+    if ($element.position().left === 0) {
         return;
     }
 
     // fill tooltip with content
-    var $char = $sender.children('.code-point-char');
+    var $char = $element.children('.code-point-char');
     ipcRenderer.send('asynchronous-message', {
         'type': 'get-char',
         'code': code,
-        'sender-position': options.isEditor ? {
+        'sender-position': (options && options.isEditor) ? {
             left: $char.position().left,
             top: $char.position().top - 5
         } : $char.position()
@@ -612,10 +620,14 @@ const loadRow = first => {
         });
     }
 
-    row.children('.code-point').hover(onCharHover, onCharHoverOut);
+    row.children('.code-point').hover(function () {
+        onCharHover($(this));
+    }, onCharHoverOut);
 
-    row.children('.code-point').click(sender => {
-        onClickCodePoint(sender.target);
+    row.children('.code-point').on('mousedown', function (event) {
+        if (event.buttons === 1) { // left button
+            onClickCodePoint($(this), 'input');
+        }
     });
 
     return row;
@@ -668,15 +680,21 @@ const onClickSubHeader = $element => {
     }
 }
 
-const onClickCodePoint = target => {
-    var $sender = $(target);
-    if ($sender.filter('.code-point').length === 0) {
-        $sender = $sender.parents('.code-point');
-    }
-    var code = parseInt($sender.attr('data-code'));
+const onClickCodePoint = ($element, behaviour) => {
+    var code = parseInt($element.attr('data-code'));
     if (code !== undefined) {
-        changeText(String.fromCodePoint(code));
-        $('#editor-input').focus();
+        switch (behaviour) {
+            case 'input':
+                changeText(String.fromCodePoint(code));
+                $('#editor-input').focus();
+                setTimeout(() => {
+                    $('#editor-input').focus();
+                }, 0);
+                break;
+            case 'go-to-char':
+                goToChar(code);
+                break;
+        }
     }
 }
 
@@ -688,8 +706,8 @@ const getSubblock = (first, last) => {
     );
     var rows = $(`<div class="code-block-sub-rows">`);
 
-    header.on('click', () => {
-        onClickSubHeader($(header));
+    header.click(function () {
+        onClickSubHeader($(this));
     });
 
     var div = $(`<div class="code-block-sub" data-first-cp="${first}" data-last-cp="${last}">`);
@@ -760,13 +778,15 @@ const goToChar = (code) => {
 
     var $main = $('#main-container');
     $main.scrollTop($main.scrollTop() + positionTop - $main.height() / 2 + 50);
+
+    hideTooltip();
 }
 
 const getIndexItem = thousand => {
     var hex = thousand.toString(16).toUpperCase();
 
     var item = $(`<div class="index-item" data-code="${thousand}">${hex}<span class="index-zeroes">000</span>`);
-    item.on('click', () => {
+    item.click(function () {
         goToChar(parseInt(thousand * 0x1000));
 
         var totalHeight = $('#index-items').height();
@@ -812,8 +832,8 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                 $('#table-container').append(elem);
             });
 
-            $('.code-block-header').on('click', () => {
-                onClickHeader($('.code-block-header:hover'));
+            $('.code-block-header').click(function () {
+                onClickHeader($(this));
             });
 
             loadCodeBlock(0);
@@ -891,6 +911,7 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                     `<div class="code-point" data-code="${cfCode}">
                         <div class="code-point-char"></div>
                         <div class="code-point-number"><div>${item}</div></div>
+                        <div class="code-point-title"></div>
                     </div>`
                 });
                 tooltipHtml += `</div>`;
@@ -925,11 +946,20 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
 
             break;
 
-        // set mouse hover text for cross-refs in tooltip
+        // set mouse hover text and click handler for cross-refs in tooltip
         case 'get-char-name':
             var char = arg['char'];
             $(`.tooltip-code-list .code-point[data-code=${char['code']}]`)
-                .attr('data-title', char['name']);
+                .attr('data-title', char['name'])
+                .mousedown(function (event) {
+                    if (event.buttons === 1) {
+                        onClickCodePoint($(this), 'input');
+                    } else if (event.buttons === 2) {
+                        onClickCodePoint($(this), 'go-to-char');
+                    }
+                });
+            $(`.tooltip-code-list .code-point[data-code=${char['code']}] .code-point-title`)
+                .html(char['name'] + '<br/>(left click to enter; right click to show in table)');
             $(`.tooltip-code-list .code-point[data-code=${char['code']}] .code-point-char`)
                 .html(getHtmlChar(char['code']));
             break;
