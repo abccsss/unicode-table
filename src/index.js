@@ -224,6 +224,8 @@ $('#editor-input').on('keydown', function (event) {
 
 // index
 $('#main-container').scroll(function () {
+    hideTooltip();
+    
     var viewHeight = $(this).height();
     var $block = $('.code-block');
     $block = $block.filter(index => 
