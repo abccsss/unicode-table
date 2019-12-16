@@ -11,7 +11,7 @@
     <div id="root">
         <div id="search-container">
             <div id="search-flex">
-                <input id="search-input" type="text" placeholder="Search here... (not yet implemented)" tabindex="2" >
+                <input id="search-input" type="text" placeholder="Search here..." tabindex="2" maxlength="256" >
             </div>
         </div>
 
@@ -36,7 +36,8 @@
                 
             </div>
             <div id="results-container" data-tab="Search">
-                
+                <div id="no-results"></div>
+                <div id="results"></div>
             </div>
         </div>
 

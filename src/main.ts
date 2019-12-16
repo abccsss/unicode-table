@@ -107,6 +107,7 @@ ipcMain.on('asynchronous-message', (event, arg) => {
                         'code': char.code,
                         'type': char.type,
                         'html': char.html,
+                        'latex': char.latex,
                         'name': char.name,
                         'is-emoji': char.emoji,
                         'general-category': char.getGeneralCategory()
@@ -155,6 +156,15 @@ ipcMain.on('asynchronous-message', (event, arg) => {
                     'type': 'get-row',
                     'code': code,
                     'chars': arr
+                });
+            });
+            break;
+        case 'search':
+            unicodeData.search(arg['query'], results => {
+                event.sender.send('asynchronous-reply', {
+                    'type': 'search',
+                    'query': arg['query'],
+                    'results': results
                 });
             });
             break;

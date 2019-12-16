@@ -225,7 +225,7 @@ $('#editor-input').on('keydown', function (event) {
 // index
 $('#main-container').scroll(function () {
     hideTooltip();
-    
+
     var viewHeight = $(this).height();
     var $block = $('.code-block');
     $block = $block.filter(index => 
@@ -294,6 +294,44 @@ $('.tab').click(function () {
     $(`[data-tab=${header}]`).css('display', 'flex');
     $('#main-container').scrollTop($tab.data('scroll'));
 });
+
+// search
+let searchTimeout;
+let searchText;
+
+$('#search-input').on('compositionstart', function () {
+    $(this).attr('data-composing', true);
+});
+
+$('#search-input').on('compositionend', function () {
+    $(this).attr('data-composing', null).trigger('input');
+});
+
+$('#search-input').on('input', function () {
+    if ($(this).attr('data-composing')) return;
+    var text = $(this).val();
+    if (searchText !== text) {
+        searchText = text;
+        if (text !== '') {
+            if (searchTimeout) 
+                clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                searchTimeout = undefined;
+                onSearch(text);
+            }, 1000);
+        } else {
+            if (searchTimeout) 
+                clearTimeout(searchTimeout);
+        }
+    }
+});
+
+const onSearch = text => {
+    ipcRenderer.send('asynchronous-message', {
+        type: 'search',
+        query: text
+    });
+}
 
 const showPopup = (header, html) => {
     $('#popup-header').text(header);
@@ -752,6 +790,8 @@ const loadCodeBlock = (first, rows, noExpandFirst) => {
 };
 
 const goToChar = (code) => {
+    $('.tab[data-header=Table]').trigger('click');
+
     code = parseInt(code);
 
     var $block = $('.code-block');
@@ -827,6 +867,12 @@ const getIndexItem = thousand => {
     return item;
 }
 
+const htmlEncode = text => $('<div>').text(text.replace(' ', '\u00a0')).html();
+
+String.prototype.replaceAll = function(search, replacement) {
+    return this.split(search).join(replacement);
+};
+
 // respond to replies
 ipcRenderer.on('asynchronous-reply', (_event, arg) => {
     switch (arg.type) {
@@ -893,8 +939,11 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
 
             var codeString = code.toString(16).toUpperCase();
             while (codeString.length < 4) codeString = '0' + codeString;
+
             var displayName = char['type'] == 'char' ?
                 char['name'].replace('&lt;control&gt;', '<span class="dim">&lt;control&gt;</span>') :
+                char['type'] == 'surrogate' ? '<span class="dim">&lt;surrogate&gt;</span>' :
+                char['type'] == 'noncharacter' ? '<span class="dim">&lt;not a character&gt;</span>' :
                 '<span class="dim">&lt;unassigned&gt;</span>';
             if (displayName === undefined) displayName = '';
 
@@ -923,14 +972,14 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                 });
                 tooltipHtml += `</div>`;
             }
-            // if (char['latex']) {
-            //     tooltipHtml += `<div class="tooltip-char-property-header">LaTeX</div>
-            //         <div class="tooltip-char-property">`;
-            //     char['latex'].forEach(latexName => {
-            //         tooltipHtml += `<span class="code">${htmlEncode(latexName)}</span>`
-            //     });
-            //     tooltipHtml += `</div>`;
-            // }
+            if (char['latex']) {
+                tooltipHtml += `<div class="tooltip-char-property-header">LaTeX</div>
+                    <div class="tooltip-char-property">`;
+                char['latex'].forEach(latexName => {
+                    tooltipHtml += `<span class="code">${htmlEncode(latexName)}</span>`
+                });
+                tooltipHtml += `</div>`;
+            }
             if (char['cross-references']) {
                 tooltipHtml +=
                     `<div class="tooltip-char-property-header">Cross References</div>
@@ -1009,6 +1058,112 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                     $row.children(`.code-point[data-code=${code + i}]`)
                         .attr('data-disabled', 'true');
                 }
+            }
+            break;
+
+        // search
+        case 'search':
+            // select the search tab
+            $('.tab[data-header=Search]').trigger('click');
+            $('#results').html('');
+            $('#main-container').scrollTop(0);
+
+            var results = arg['results'];
+            if (results.length === 0) {
+                $('#no-results').text('No results found.').css('display', 'block');
+            } else {
+                $('#no-results').css('display', 'none');
+
+                results.forEach(result => {
+                    switch (result.type) {
+                        case 'char':
+                            var char = result.char;
+
+                            var codeString = result.codes[0].toString(16).toUpperCase();
+                            while (codeString.length < 4) codeString = '0' + codeString;
+                            if (result.matchedProperties.includes('code')) {
+                                codeString = `<span class="emphasis">${codeString}</span>`;
+                            }
+
+                            // show highlights in char name using <span class="emphasis">
+                            var name = char['name'] ? char['name'] : '';
+                            result.matchedProperties.forEach(item => {
+                                if (item.startsWith('name:')) {
+                                    var keyword = item.substring(5).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                    name = name.replace(new RegExp('\\b' + keyword + '\\b', 'gi'), '<<$&>>');
+                                }
+                            });
+                            name = name.replaceAll('>> <<', ' ').replaceAll('>>-<<', '-').replaceAll('>><<', '')
+                                .replaceAll('<<', '<span class="emphasis">').replaceAll('>>', '</span>');
+                            var displayName = char['type'] == 'char' ?
+                                name.replace('&lt;control&gt;', '<span class="dim">&lt;control&gt;</span>') :
+                                char['type'] == 'surrogate' ? '<span class="dim">&lt;surrogate&gt;</span>' :
+                                char['type'] == 'noncharacter' ? '<span class="dim">&lt;not a character&gt;</span>' :
+                                '<span class="dim">&lt;unassigned&gt;</span>';
+
+                            var html = `<div class="search-result">`;
+                            if (char.type === 'char') {
+                                html += `<div class="code-point" data-code="${char.code}" data-title>
+                                    <div class="code-point-char">${getHtmlChar(result.codes[0])}</div>
+                                    <div class="code-point-title">(left click to enter; right click to show in table)</div>
+                                </div>`;
+                            } else {
+                                html += `<div class="code-point" data-code="${char.code}" data-title data-disabled>
+                                    <div class="code-point-char disabled"></div>
+                                    <div class="code-point-title">(left click to enter)</div>
+                                </div>`;
+                            }
+                            html += `<div class="result-contents">
+                                <div class="result-char-code">U+${codeString}</div>
+                                <div class="result-char-name">${displayName}</div>
+                                <table>`;
+                            
+                            // decimal code
+                            var hasDecimalCode = result.matchedProperties.includes('decimal-code');
+                            html += `<tr><td class="result-property-header">Decimal Code&nbsp;</td>
+                                <td class="result-property"><span${hasDecimalCode ? ' class="emphasis"' : ''}>${result.codes[0]}</span></td></tr>`;
+
+                            // decomposition
+                            if (result.matchedProperties.includes('decomp')) {
+                                html += `<tr><td class="result-property-header">Decomposition&nbsp;</td>
+                                    <td class="result-property"><span class="emphasis">${htmlEncode(char.decomp)}</span></td></tr>`;
+                            }
+
+                            // html
+                            if (char.html) {
+                                html += `<tr><td class="result-property-header">HTML Entity&nbsp;</td><td class="result-property">`;
+                                char.html.forEach(item => {
+                                    var isMatch = result.matchedProperties.includes('html:' + item);
+                                    html += `<span class="code${isMatch ? ' emphasis' : ''}">&amp;${item};</span>`;
+                                });
+                                html += `</td></tr>`;
+                            }
+
+                            // latex
+                            if (char.latex) {
+                                html += `<tr><td class="result-property-header">LaTeX&nbsp;</td><td class="result-property">`;
+                                char.latex.forEach(item => {
+                                    var isMatch = result.matchedProperties.includes('latex:' + item);
+                                    html += `<span class="code${isMatch ? ' emphasis' : ''}">${item}</span>`;
+                                });
+                                html += `</td></tr>`;
+                            }
+
+                            html += `</table></div>`;
+                            var elem = $(html);
+
+                            elem.find('.code-point').mousedown(function (event) {
+                                if (event.buttons === 1) { // left button
+                                    onClickCodePoint($(this), 'input');
+                                } else if (event.buttons === 2) { // right button
+                                    onClickCodePoint($(this), 'go-to-char');
+                                }
+                            });
+
+                            $('#results').append(elem);
+                            break;
+                    }
+                });
             }
             break;
     }
