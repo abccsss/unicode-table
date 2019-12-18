@@ -1210,10 +1210,10 @@ ipcRenderer.on('command', (_event, arg) => {
             break;
         case 'about':
             showPopup('Unicode Table', 
-                `Version: 0.1.0<br/>` +
+                `Version: ${arg.versions['app']}<br/>` +
                 `Repository: <a href="https://github.com/abccsss/unicode-table">` +
                 `<span class="code">https://github.com/abccsss/unicode-table</span></a><br/><br/>` +
-                `Unicode: 12.1 (May 2019)<br/>` +
+                `Unicode: ${arg.versions['unicode-full']}<br/>` +
                 `Electron: ${arg.versions['electron']}<br/>` +
                 `Chrome: ${arg.versions['chrome']}<br/>` +
                 `Node.js: ${arg.versions['node']}`

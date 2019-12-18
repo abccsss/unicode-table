@@ -10,6 +10,11 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
 
+// Versions to be shown in the about dialog
+let versions = process.versions;
+versions['app'] = '0.1.0';
+versions['unicode-full'] = '12.1 (May 2019)';
+
 // Create the menu
 const menu = Menu.buildFromTemplate([
     {
