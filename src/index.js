@@ -469,6 +469,22 @@ const updateEditorChars = () => {
     $('#text-preview').text(editorText);
 }
 
+// form: 'NFC' | 'NFD' | 'NFKC' | 'NFKD'
+const onNormalise = form => {
+    if (selection.start === selection.end) {
+        onSelectAll();
+    }
+    var selectionStart = selection.start;
+    var selectedText = editorText.substring(stringIndex(editorText, selection.start), stringIndex(editorText, selection.end));
+    var normalised = selectedText.normalize(form);
+    changeText(normalised);
+    caretPosition = selectionStart + actualIndex(normalised, normalised.length);
+    changeSelection({
+        start: selectionStart,
+        end: selectionStart + actualIndex(normalised, normalised.length) 
+    });
+}
+
 // for undo stack to work properly, 'newText' should be undefined IF AND ONLY IF
 // the change is made by user in the input box, and undo stack is already pushed
 const changeText = newText => {
@@ -1180,6 +1196,18 @@ ipcRenderer.on('command', (_event, arg) => {
         case 'undo':
             document.execCommand(arg.command);
             break;
+        case 'normalise-nfc':
+            onNormalise('NFC');
+            break;
+        case 'normalise-nfd':
+            onNormalise('NFD');
+            break;
+        case 'normalise-nfkc':
+            onNormalise('NFKC');
+            break;
+        case 'normalise-nfkd':
+            onNormalise('NFKD');
+            break;
         case 'about':
             showPopup('Unicode Table', 
                 `Version: 0.1.0<br/>` +
@@ -1193,7 +1221,4 @@ ipcRenderer.on('command', (_event, arg) => {
             break;
     }
 });
-function newFunction() {
-    console.log(this);
-}
 

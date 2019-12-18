@@ -21,6 +21,16 @@ const menu = Menu.buildFromTemplate([
             { role: 'cut', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'cut' }); } },
             { role: 'copy', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'copy' }); } },
             { role: 'paste', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'paste' }); } },
+            { type: 'separator' },
+            {
+                label: 'Normalise',
+                submenu: [
+                    { label: 'NFC (Canonical Composition)', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'normalise-nfc' }); } },
+                    { label: 'NFD (Canonical Decomposition)', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'normalise-nfd' }); } },
+                    { label: 'NFKC (Compatibility Composition)', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'normalise-nfkc' }); } },
+                    { label: 'NFKD (Compatibility Decomposition)', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'normalise-nfkd' }); } }
+                ]
+            }
         ]
     },
     {
