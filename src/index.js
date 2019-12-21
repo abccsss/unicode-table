@@ -746,6 +746,8 @@ const getHtmlChar = (code, isEmojiSeq) => {
 
     if (codes.length === 1) {
         var code = codes[0];
+        // return nothing for private use, unassigned chars with no font coverage, and nonchars
+        if ((code >= 0xe000 && code <= 0xf8ff) || (code >= 0x30000 && code <= 0xdffff) || code >= 0xe01f0 || (code % 0x10000 >= 0xfffe)) return ''; 
         var isSpecial = code <= 0x20 || (code >= 0x7f && code <= 0xa0) || code == 0xad ||
             (code >= 0x2000 && code <= 0x200f) || code == 0x2011 || (code >= 0x2028 && code <= 0x202f) ||
             (code >= 0x205f && code <= 0x206f) || (code >= 0xfe00 && code <= 0xfe0f) || code == 0xfeff ||
@@ -1115,7 +1117,7 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
             while (codeString.length < 4) codeString = '0' + codeString;
 
             var displayName = char['type'] == 'char' ?
-                char['name'].replace('&lt;control&gt;', '<span class="dim">&lt;control&gt;</span>') :
+                char['name'].replace(/&lt;([^&]+)&gt;/g, '<span class="dim">&lt;$1&gt;</span>') :
                 char['type'] == 'surrogate' ? '<span class="dim">&lt;surrogate&gt;</span>' :
                 char['type'] == 'noncharacter' ? '<span class="dim">&lt;not a character&gt;</span>' :
                 '<span class="dim">&lt;unassigned&gt;</span>';
@@ -1189,9 +1191,10 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
         
             // compute the position of the tooltip
             var $container = $('#main-container');
+            var charHeight = $('.tab[data-header=Search]').attr('data-selected') ? 60 : 50;
             var left = Math.min(position.left, $container.width() - $tooltip.width() - 2);
-            var top = position.top + 50;
-            if (top + $tooltip.height() > $container.height()) {
+            var top = position.top + charHeight;
+            if (top + $tooltip.height() > $('#root').height()) {
                 top = Math.max(0, position.top - $tooltip.height());
             }
             $tooltip.css('left', left).css('top', top);
@@ -1270,13 +1273,18 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                             name = name.replaceAll('>> <<', ' ').replaceAll('>>-<<', '-').replaceAll('>><<', '')
                                 .replaceAll('<<', '<span class="emphasis">').replaceAll('>>', '</span>');
                             var displayName = char['type'] == 'char' ?
-                                name.replace('&lt;control&gt;', '<span class="dim">&lt;control&gt;</span>') :
+                                name.replace(/&lt;([^&]+)&gt;/g, '<span class="dim">&lt;$1&gt;</span>') :
                                 char['type'] == 'surrogate' ? '<span class="dim">&lt;surrogate&gt;</span>' :
                                 char['type'] == 'noncharacter' ? '<span class="dim">&lt;not a character&gt;</span>' :
                                 '<span class="dim">&lt;unassigned&gt;</span>';
+                            var isPrivateUse = char.type === 'char' && name.includes('&lt;private use&gt;');
 
                             var html = `<div class="search-result">`;
-                            if (char.type === 'char') {
+                            if (isPrivateUse) {
+                                html += `<div class="code-point" data-code="${char.code}">
+                                    <div class="code-point-char"></div>
+                                </div>`;
+                            } else if (char.type === 'char') {
                                 html += `<div class="code-point" data-code="${char.code}" data-title>
                                     <div class="code-point-char">${getHtmlChar(result.codes[0])}</div>
                                     <div class="code-point-title">(left click to enter; right click to show in table)</div>
@@ -1326,13 +1334,26 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                             html += `</table></div>`;
                             var elem = $(html);
 
-                            elem.find('.code-point').mousedown(function (event) {
-                                if (event.buttons === 1) { // left button
-                                    onClickCodePoint($(this), 'input');
-                                } else if (event.buttons === 2) { // right button
-                                    onClickCodePoint($(this), 'go-to-char');
+                            if (char.type === 'char' && !isPrivateUse) {
+                                elem.find('.code-point').mousedown(function (event) {
+                                    if (event.buttons === 1) { // left button
+                                        onClickCodePoint($(this), 'input');
+                                    } else if (event.buttons === 2) { // right button
+                                        onClickCodePoint($(this), 'go-to-char');
+                                    }
+                                });
+                            } else {
+                                elem.find('.code-point').mousedown(function (event) {
+                                    if (event.buttons === 1) { // left button
+                                        onClickCodePoint($(this), 'input');
+                                    }
+                                });
+                                if (isPrivateUse) {
+                                    elem.find('.code-point').hover(function () {
+                                        onCharHover($(this));
+                                    }, onCharHoverOut);
                                 }
-                            });
+                            }
 
                             $('#results').append(elem);
                             break;

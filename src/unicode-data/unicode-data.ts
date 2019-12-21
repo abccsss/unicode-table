@@ -213,6 +213,15 @@ export default class UnicodeData {
                         gc: 'Cn'
                     }), undefined);
                 }
+                else if ((code >= 0xe000 && code <= 0xf8ff) || code >= 0xf0000) {
+                    callback(new UnicodeCharacter({
+                        age: code >= 0xf0000 ? '2.0' : '1.1',
+                        code: code,
+                        name: '&lt;private use&gt; ' + toHex(code),
+                        type: 'char',
+                        gc: 'Co'
+                    }), undefined);
+                }
                 else {
                     callback(new UnicodeCharacter({
                         code: code,
