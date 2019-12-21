@@ -302,7 +302,7 @@ export default class UnicodeData {
         var result = /^(u\+|u|\\u|0x)?([0-9a-f]+)$/.exec(trimmedText);
         if (result) {
             var exactCode = parseInt(result[2], 16);
-            if (!isNaN(exactCode) && exactCode <= 0x10ffff) {
+            if (!isNaN(exactCode) && exactCode <= 0x10ffff && !(exactCode >= 0xd800 && exactCode <= 0xdfff)) {
                 pushResult('char', [ exactCode ], [ 'code' ], 10);
             }
         }
@@ -311,7 +311,7 @@ export default class UnicodeData {
         var result = /^[0-9]+$/.exec(trimmedText);
         if (result) {
             var exactCode = parseInt(result[0]);
-            if (!isNaN(exactCode) && exactCode <= 0x10ffff) {
+            if (!isNaN(exactCode) && exactCode <= 0x10ffff && !(exactCode >= 0xd800 && exactCode <= 0xdfff)) {
                 pushResult('char', [ exactCode ], [ 'decimal-code' ], 9.5);
             }
         }
