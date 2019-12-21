@@ -1,4 +1,4 @@
-import { createReadStream, existsSync, writeFileSync, readFile, readFileSync, read } from 'fs';
+import { createReadStream, existsSync, writeFileSync, readFile, readFileSync, exists } from 'fs';
 import { createInterface } from "readline";
 var XmlStream = require('xml-stream');
 
@@ -75,6 +75,13 @@ export class UnicodeBlock {
     name: string;
 }
 
+export class UnicodeCharSet {
+    name: string;
+    description?: string;
+    sections?: UnicodeCharSet[];
+    chars?: string[];
+}
+
 export class UnicodeSearchResult {
     type: 'char' | 'sequence';
     codes: number[];
@@ -106,7 +113,7 @@ const searchSynonyms: string[][] = [
     [ '19', 'nineteen' ],
     [ '20', 'twenty' ],
     [ '-', 'minus' ],
-    [ '+', 'plus' ],
+    [ '\\+', 'plus' ],
     [ '/', 'slash', 'solidus' ],
     [ 'math', 'mathematical' ]
 ];
@@ -117,6 +124,7 @@ export default class UnicodeData {
     charData: UnicodeCharacter[][] = [];
     blockData: UnicodeBlock[];
     emojiData: number[];
+    paletteData: UnicodeCharSet[];
     allHundredsInitialised: boolean = false;
 
     // is not undefined only when initialising
@@ -126,9 +134,10 @@ export default class UnicodeData {
         if (!creatingDataFiles)
             createDataFiles();
         if (existsSync(`./resources/unicode/ucd.emoji.json`)) {
-            readFile(`./resources/unicode/ucd.emoji.json`, (_err, data) => {
-                this.emojiData = JSON.parse(data.toString());
-            });
+            this.emojiData = JSON.parse(readFileSync(`./resources/unicode/ucd.emoji.json`).toString());
+        }
+        if (existsSync('./resources/unicode/palettes.json')) {
+            this.paletteData = JSON.parse(readFileSync(`./resources/unicode/palettes.json`).toString());
         }
     }
 

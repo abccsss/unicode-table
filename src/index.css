@@ -639,7 +639,7 @@ input::selection {
     font-weight: 200;
 }
 
-.code-block-row {
+.code-block-row, .palette-row {
     display: flex;
 }
 
@@ -1046,7 +1046,7 @@ span.index-zeroes {
     justify-content: flex-end;
 }
 
-.popup-button {
+.popup-button, .button {
     background-color: var(--color-secondary);
     width: 80px;
     height: 20px;
@@ -1054,7 +1054,7 @@ span.index-zeroes {
     cursor: pointer;
 }
 
-.popup-button:hover {
+.popup-button:hover, .button:hover {
     background-color: var(--color-border);
 }
 
@@ -1193,4 +1193,91 @@ span.index-zeroes {
     border-radius: 3px;
     padding: 2px 5px;
     background-color: var(--color-code-emphasis);
+}
+
+#palette-content {
+    display: none;
+}
+
+.palette-group-header {
+    font-size: 24px;
+    font-weight: 200;
+    margin: 20px 10px 10px;
+}
+
+.palette-group-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: stretch;
+}
+
+.palette-info {
+    padding: 10px 15px 15px;
+    background-color: var(--color-secondary);
+    border: 1px solid var(--color-secondary);
+    align-items: center;
+    flex-shrink: 0;
+    flex-grow: 1;
+    width: 250px;
+    margin: 5px;
+}
+
+.palette-info:hover {
+    background-color: var(--color-tertiary);
+}
+
+.palette-info-name {
+    font-size: 20px;
+    color: var(--color-text-secondary);
+}
+
+.palette-info-description {
+    color: var(--color-text-tertiary);
+    margin-bottom: 10px;
+}
+
+.palette-info-samples {
+    display: flex;
+    justify-content: stretch;
+    align-items: center;
+}
+
+.palette-info-samples .code-point-char {
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+    margin-right: 10px;
+    background-color: var(--color-tertiary);
+    border: none;
+}
+
+.palette-info-samples-ellipsis {
+    color: var(--color-text-tertiary);
+    width: 30px;
+}
+
+.palette-info-samples-ellipsis::after {
+    content: '• • •';
+}
+
+#palette-buttons-container {
+    float: right;
+}
+
+#palette-header {
+    font-size: 32px;
+    font-weight: 200;
+    margin: 15px 10px 5px;
+}
+
+#palette-header-underline {
+    border-bottom: 2px solid var(--color-border);
+    margin: 0 10px 15px;
+}
+
+.palette-section-header {
+    font-size: 20px;
+    color: var(--color-text-secondary);
+    margin: 20px 10px 10px;
 }

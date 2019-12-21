@@ -107,6 +107,7 @@ ipcMain.on('asynchronous-message', (event, arg) => {
                     'type': 'init',
                     'blocks': blocks,
                     'emoji': unicodeData.emojiData,
+                    'palettes': unicodeData.paletteData,
                     'is-mac': process.platform === 'darwin'
                 });
             });

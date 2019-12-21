@@ -326,6 +326,80 @@ $('#search-input').on('input', function () {
     }
 });
 
+// palettes
+let palettes;
+
+$('#palette-back-button, .tab[data-header=Palettes]').click(function () {
+    $('#palette-content').css('display', 'none');
+    $('#palette-list').attr('style', null);
+    $('#main-container').scrollTop(0);
+});
+
+const loadPalette = id => {
+    var palette = palettes[id];
+    if (palette) {
+        $('#palette-header').text(palette.name);
+        var $sections = $('#palette-sections');
+        $sections.html('');
+
+        palette.sections.forEach(section => {
+            var elem = $(`<div class="palette-section-header">`).text(section.name);
+            $sections.append(elem);
+
+            elem = $('<div class="palette-section-rows">')
+            for (var i = 0; i < section.chars.length; i += 0x10) {
+                elem.append(loadPaletteRow(section.chars.slice(i)));
+            }
+            $sections.append(elem);
+        });
+    }
+}
+
+const loadPaletteRow = codes => {
+    var row = $(`<div class="palette-row">`);
+    for (var i = 0; i < 16 && i < codes.length; i++) {
+        var code = codes[i];
+
+        var isSingle = /^\b[0-9A-F]+\b$/i.test(code);
+
+        var div;
+        if (isSingle) {
+            code = parseInt(code, 16);
+            div = $(`<div class="code-point" data-code="${code}">
+                <div class="code-point-char">${getHtmlChar(code)}</div>
+                <div class="code-point-number"><div>${toHex(code)}</div></div>
+            </div>`);
+            div.hover(function () {
+                onCharHover($(this));
+            }, onCharHoverOut);
+            div.mousedown(function (event) {
+                if (event.buttons === 1) {
+                    onClickCodePoint($(this), 'input');
+                } else if (event.buttons === 2) {
+                    onClickCodePoint($(this), 'go-to-char');
+                }
+            });
+        } else if (/^\b[0-9A-F]+\b/i.test(code)) {
+            var first = /^\b[0-9A-F]+\b/i.exec(code)[0];
+            var isEmoji = /\bFE0F\b/i.test(code);
+            div = $(`<div class="code-point" data-codes="${code}" data-title>
+                <div class="code-point-char">${getHtmlChar(code, isEmoji)}</div>
+                <div class="code-point-number"><div>${first}...</div></div>
+                <div class="code-point-title">${code}<br/>(left click to enter)</div>
+            </div>`);
+            div.mousedown(function (event) {
+                if (event.buttons === 1) {
+                    onClickCodePoint($(this), 'input');
+                }
+            });
+        } else if (code === 'xxxx') {
+            div = $(`<div class="code-point">`);
+        }
+        row.append(div);
+    }
+    return row;
+}
+
 const onSearch = text => {
     ipcRenderer.send('asynchronous-message', {
         type: 'search',
@@ -635,18 +709,35 @@ const toHex = code => {
     return hex;
 }
 
-const getHtmlChar = code => {
-    var isEmoji = emojiData.includes(code);
-    var fontClass = toHex(Math.floor(code / 0x400) * 0x400).toLowerCase();
+const getHtmlChar = (code, isEmojiSeq) => {
+    var codes = [];
+    if (typeof code === 'string') {
+        code.match(/\b[0-9A-F]+\b/gi).forEach(match => {
+            codes.push(parseInt(match, 16));
+        });
+    } else if (typeof code === 'number') {
+        codes.push(code);
+    } else throw 'getHtmlChar: invalid argument.';
 
-    var isSpecial = code <= 0x20 || (code >= 0x7f && code <= 0xa0) || code == 0xad ||
-        (code >= 0x2000 && code <= 0x200f) || code == 0x2011 || (code >= 0x2028 && code <= 0x202f) ||
-        (code >= 0x205f && code <= 0x206f) || (code >= 0xfe00 && code <= 0xfe0f) || code == 0xfeff ||
-        (code >= 0x1d173 && code <= 0x1d17a);
-    var isTag = code >= 0xe0000 && code < 0xe2000;
-    var htmlChar = '&#' + (isSpecial ? code + (code >= 0x1d000 ? -0xf000 : code >= 0xfe00 ? -0x1e00 : code >= 0x2000 ? 0xc000 : 0xe000) : isTag ? code - 0xe0000 + 0xe000 : code) + ';';
+    var isEmoji = isEmojiSeq || (codes.length === 1 && emojiData.includes(codes[0]));
+    var html = '';
+    var fontClass = isEmoji ? 'emoji' : 'u' + toHex(Math.floor(codes[0] / 0x400) * 0x400).toLowerCase();
 
-    return isEmoji ? `<div class="glyph emoji">${htmlChar}</div>` : `<div class="glyph u${fontClass}">${htmlChar}</div>`;
+    if (codes.length === 1) {
+        var code = codes[0];
+        var isSpecial = code <= 0x20 || (code >= 0x7f && code <= 0xa0) || code == 0xad ||
+            (code >= 0x2000 && code <= 0x200f) || code == 0x2011 || (code >= 0x2028 && code <= 0x202f) ||
+            (code >= 0x205f && code <= 0x206f) || (code >= 0xfe00 && code <= 0xfe0f) || code == 0xfeff ||
+            (code >= 0x1d173 && code <= 0x1d17a);
+        var isTag = code >= 0xe0000 && code < 0xe2000;
+        html += '&#' + (isSpecial ? code + (code >= 0x1d000 ? -0xf000 : code >= 0xfe00 ? -0x1e00 : code >= 0x2000 ? 0xc000 : 0xe000) : isTag ? code - 0xe0000 + 0xe000 : code) + ';';
+    } else {
+        codes.forEach(code => {
+            html += '&#' + code + ';';
+        });
+    }
+
+    return `<div class="glyph ${fontClass}">${html}</div>`;
 }
 
 // initialise unicode data
@@ -739,8 +830,8 @@ const onClickSubHeader = $element => {
 }
 
 const onClickCodePoint = ($element, behaviour) => {
-    var code = parseInt($element.attr('data-code'));
-    if (code !== undefined) {
+    if ($element.attr('data-code')) {
+        var code = parseInt($element.attr('data-code'));
         switch (behaviour) {
             case 'input':
                 changeText(String.fromCodePoint(code));
@@ -753,6 +844,16 @@ const onClickCodePoint = ($element, behaviour) => {
                 goToChar(code);
                 break;
         }
+    } else if ($element.attr('data-codes') && behaviour === 'input') {
+        var text = '';
+        $element.attr('data-codes').match(/\b[0-9A-F]+\b/gi).forEach(match => {
+            text += String.fromCodePoint(parseInt(match, 16));
+        });
+        changeText(text);
+        $('#editor').addClass('focus-helper');
+        setTimeout(() => {
+            $('#editor-input').focus();
+        }, 0);
     }
 }
 
@@ -892,7 +993,7 @@ String.prototype.replaceAll = function(search, replacement) {
 // respond to replies
 ipcRenderer.on('asynchronous-reply', (_event, arg) => {
     switch (arg.type) {
-        // initialise unicode blocks
+        // initialise unicode blocks and palettes
         case 'init':
             emojiData = arg.emoji;
             isMac = arg['is-mac'];
@@ -941,6 +1042,40 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
             }
             $index.append(getIndexItem(0xe0));
             $('.index-item[data-code=0]').addClass('index-item-active');
+
+            // palettes
+            palettes = [];
+            var $list = $('#palette-list');
+            var id = 0;
+
+            arg.palettes.forEach(group => {
+                $list.append($(`<div class="palette-group-header">`).text(group.name));
+                var $group = $(`<div class="palette-group-content">`);
+                group.sections.forEach(palette => {
+                    palettes.push(palette);
+                    var elem = $(`
+                        <div class="palette-info" data-id="${id++}">
+                            <div class="palette-info-name">${palette.name}</div>
+                            <div class="palette-info-description">${palette.description}</div>
+                            <div class="palette-info-samples">
+                                <div class="code-point-char">${getHtmlChar(palette.sections[0].chars[0], /\bFE0F\b/i.test(palette.sections[0].chars[0]))}</div>
+                                <div class="code-point-char">${getHtmlChar(palette.sections[0].chars[1], /\bFE0F\b/i.test(palette.sections[0].chars[1]))}</div>
+                                <div class="code-point-char">${getHtmlChar(palette.sections[0].chars[2], /\bFE0F\b/i.test(palette.sections[0].chars[2]))}</div>
+                                <div class="code-point-char">${getHtmlChar(palette.sections[0].chars[3], /\bFE0F\b/i.test(palette.sections[0].chars[3]))}</div>
+                                <div class="palette-info-samples-ellipsis"></div>
+                            </div>
+                        </div>
+                    `);
+                    elem.click(function () {
+                        $('#palette-list').css('display', 'none');
+                        $('#palette-content').css('display', 'block');
+                        $('#main-container').scrollTop(0);
+                        loadPalette($(this).attr('data-id'));
+                    });
+                    $group.append(elem);
+                });
+                $list.append($group);
+            });
             break;
 
         // receive char information for tooltip
