@@ -795,6 +795,8 @@ const onClickHeader = ($element, noExpandFirst) => {
         // collapse expanded block
         var positionTop = $block.position().top;
         onClickHeader($('.code-block[data-expanded]').find('.code-block-header'));
+        // increase performance by removing collapsed content
+        $('.code-block-rows').html('');
         $('#main-container').scrollTop($('#main-container').scrollTop() - positionTop + $block.position().top);
 
         $block.attr('data-expanded', 'true');
