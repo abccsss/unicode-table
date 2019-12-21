@@ -222,6 +222,23 @@ $('#editor-input').on('keydown', function (event) {
     }
 });
 
+let editorScrollTarget;
+$('#editor').on('mousewheel', function (event) {
+    if (event.originalEvent.deltaX === 0) {
+        if (editorScrollTarget === undefined) {
+            editorScrollTarget = $(this).scrollLeft();
+        }
+        editorScrollTarget += event.originalEvent.deltaY;
+        $(this).animate({
+            scrollLeft: editorScrollTarget
+        }, {
+            duration: 150,
+            queue: false,
+            complete: () => editorScrollTarget = undefined
+        });
+    }
+})
+
 // index
 $('#main-container').scroll(function () {
     hideTooltip();
@@ -674,6 +691,10 @@ const changeSelection = newSelection => {
                     }
                 }, 40);
             }
+        } else if (caretPosition === 0) {
+            $editor.scrollLeft(0);
+        } else if (caretPosition === actualIndex(editorText, editorText.length)) {
+            $editor.scrollLeft($editor.scrollLeft() + caretPos - editorWidth);
         }
     }
 }
