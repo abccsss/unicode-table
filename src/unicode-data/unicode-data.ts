@@ -82,6 +82,13 @@ export class UnicodeCharSet {
     chars?: string[];
 }
 
+export class UnicodeSequence {
+    age?: string;
+    codes: string;
+    name: string;
+    type: string;
+}
+
 export class UnicodeSearchResult {
     type: 'char' | 'sequence';
     codes: number[];
@@ -125,6 +132,7 @@ export default class UnicodeData {
     blockData: UnicodeBlock[];
     emojiData: number[];
     paletteData: UnicodeCharSet[];
+    sequenceData: UnicodeSequence[];
     allHundredsInitialised: boolean = false;
 
     // is not undefined only when initialising
@@ -135,6 +143,9 @@ export default class UnicodeData {
             createDataFiles();
         if (existsSync(`./resources/unicode/ucd.emoji.json`)) {
             this.emojiData = JSON.parse(readFileSync(`./resources/unicode/ucd.emoji.json`).toString());
+        }
+        if (existsSync(`./resources/unicode/ucd.sequences.json`)) {
+            this.sequenceData = JSON.parse(readFileSync(`./resources/unicode/ucd.sequences.json`).toString());
         }
         if (existsSync('./resources/unicode/palettes.json')) {
             this.paletteData = JSON.parse(readFileSync(`./resources/unicode/palettes.json`).toString());
@@ -656,6 +667,8 @@ export default class UnicodeData {
                 var result = /^([0-9A-F]+)(\.\.([0-9A-F]+))?$/.exec(value);
                 var start = parseInt(result[1], 16);
                 var end = result[3] ? parseInt(result[3], 16) : start;
+                // exclude regional indicators
+                if (start === 0x1f1e6) return;
                 
                 for (var code = start; code <= end; code++) {
                     this.emojiData.push(code);
@@ -664,6 +677,22 @@ export default class UnicodeData {
                         charHundred[code % 0x100].emoji = true;
                     }
                 }
+            });
+
+            // parse emoji sequences
+            this.sequenceData = [];
+            ['emoji-sequences.txt', 'emoji-zwj-sequences.txt'].forEach(fileName => {
+                var text = readFileSync(`./resources/unicode/raw/${fileName}`).toString();
+    
+                text.match(/(?<=\n|^)[0-9A-F\.]+( [0-9A-F\.]+)+ *;[^;]+;[^#]+# *E[0-9\.]+/g).forEach(value => {
+                    var result = /^([^;]+);([^;]+);([^#]+)#(.+)$/.exec(value);
+                    this.sequenceData.push({
+                        codes: result[1].trim().toUpperCase(),
+                        type: result[2].trim().replace(/_/g, ' '),
+                        name: result[3].trim().toUpperCase(),
+                        age: result[4].trim(),
+                    });
+                });
             })
 
             callback();
@@ -678,7 +707,8 @@ function createDataFiles(): void {
     var unicodeData = new UnicodeData(true);
     unicodeData.completeInitAsync(() => {
         writeFileSync(`./resources/unicode/ucd.blocks.json`, JSON.stringify(unicodeData.blockData));
-        writeFileSync(`./resources/unicode/ucd.emoji.json`, JSON.stringify(unicodeData.emojiData))
+        writeFileSync(`./resources/unicode/ucd.emoji.json`, JSON.stringify(unicodeData.emojiData));
+        writeFileSync(`./resources/unicode/ucd.sequences.json`, JSON.stringify(unicodeData.sequenceData));
         for (var hundred = 0; hundred < 0x10ff; hundred++) {
             if (unicodeData.charData[hundred] && unicodeData.charData[hundred].length > 0) {
                 writeFileSync(`./resources/unicode/ucd.${toHex(hundred * 0x100)}.json`, JSON.stringify(unicodeData.charData[hundred]));

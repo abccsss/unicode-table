@@ -18,6 +18,7 @@ const excludeFromIndex = [ 0xe, 0x15, 0x19, 0x1a, 0x1c ];
 const maxLength = 256;
 const undoLimit = 1000;
 let emojiData;
+let sequenceData;
 let isMac;
 let mouseEvent;
 
@@ -396,11 +397,25 @@ const loadPaletteRow = codes => {
                     onClickCodePoint($(this), 'go-to-char');
                 }
             });
+        } else if (getSequence(code)) {
+            var sequence = getSequence(code);
+            var first = /^\b[0-9A-F]+\b/i.exec(code)[0];
+            div = $(`<div class="code-point" data-codes="${code}">
+                <div class="code-point-char">${getHtmlChar(code)}</div>
+                <div class="code-point-number"><div>${first}...</div></div>
+            </div>`).data('sequence', sequence);
+            div.mousedown(function (event) {
+                if (event.buttons === 1) {
+                    onClickCodePoint($(this), 'input');
+                }
+            });
+            div.hover(function () {
+                onCharHover($(this));
+            }, onCharHoverOut);
         } else if (/^\b[0-9A-F]+\b/i.test(code)) {
             var first = /^\b[0-9A-F]+\b/i.exec(code)[0];
-            var isEmoji = /\bFE0F\b/i.test(code);
             div = $(`<div class="code-point" data-codes="${code}" data-title>
-                <div class="code-point-char">${getHtmlChar(code, isEmoji)}</div>
+                <div class="code-point-char">${getHtmlChar(code)}</div>
                 <div class="code-point-number"><div>${first}...</div></div>
                 <div class="code-point-title">${code}<br/>(left click to enter)</div>
             </div>`);
@@ -699,8 +714,21 @@ const changeSelection = newSelection => {
     }
 }
 
+const reallyShowTooltip = position => {
+    var $tooltip = $('#tooltip-container');
+    var $container = $('#main-container');
+    var charHeight = $('.tab[data-header=Search]').attr('data-selected') ? 60 : 50;
+    var left = Math.min(position.left, $container.width() - $tooltip.width() - 2);
+    var top = position.top + charHeight;
+    if (top + $tooltip.height() > $('#root').height()) {
+        top = Math.max(0, position.top - $tooltip.height());
+    }
+    $tooltip.css('left', left).css('top', top);
+    $tooltip.show(200);
+}
+
 const showTooltip = ($element, options) => {
-    var code = $element.data('code');
+    var code = $element.data('code'), sequence = $element.data('sequence');
 
     // when typing in editor, position is (0, 0) immediately after text change
     // in this case, wait for the next round of hover event
@@ -709,15 +737,78 @@ const showTooltip = ($element, options) => {
     }
 
     // fill tooltip with content
-    var $char = $element.children('.code-point-char');
-    ipcRenderer.send('asynchronous-message', {
-        'type': 'get-char',
-        'code': code,
-        'sender-position': (options && options.isEditor) ? {
-            left: $char.position().left,
-            top: $char.position().top - 5
-        } : $char.position()
-    });
+    var position = $element.children('.code-point-char').position();
+    if (sequence) {
+        var $tooltip = $('#tooltip-container');
+        var codes = sequence.codes.split(' ').map(s => parseInt(s, 16));
+        var variants = getEmojiVariants(sequence.codes);
+
+        var tooltipHtml = 
+            `<div id="tooltip">
+                <div class="code-point-char">${getHtmlChar(sequence.codes)}</div>
+                <div class="tooltip-char-code">${sequence.codes.split(' ').map(s => 'U+' + s).join(' ')}</div>
+                <div class="tooltip-char-name">${htmlEncode(sequence.name)}</div>`
+        if (sequence.type)
+            tooltipHtml +=
+                `<div class="tooltip-char-property-header">Type</div>
+                <div class="tooltip-char-property">${sequence.type}</div>`;
+        tooltipHtml +=
+                `<div class="tooltip-char-property-header">Code Points</div>
+                <div class="tooltip-code-list">`;
+        codes.forEach(code => {
+            tooltipHtml += 
+                `<div class="code-point" data-code="${code}">
+                    <div class="code-point-char"></div>
+                    <div class="code-point-number"><div>${toHex(code)}</div></div>
+                    <div class="code-point-title"></div>
+                </div>`
+        });
+        if (variants) {
+            tooltipHtml += 
+                `</div>
+                <div class="tooltip-char-property-header">Variants</div>
+                <div class="tooltip-code-list">`;
+            variants.forEach(variant => {
+                tooltipHtml += 
+                `<div class="code-point" data-codes="${variant.codes}" data-title>
+                    <div class="code-point-char">${getHtmlChar(variant.codes)}</div>
+                    <div class="code-point-number"><div>${variant.codes.replace(/ .+/, '...')}</div></div>
+                    <div class="code-point-title">${variant.codes}<br/>${variant.name}<br/>(click to enter)</div>
+                </div>`
+            });
+        }
+        tooltipHtml += 
+                `</div>
+                <div class="tooltip-char-property-header">Introduced in</div>
+                <div class="tooltip-char-property">${sequence.age.replace('E', 'Emoji ')}</div>
+            </div>`;
+        $tooltip.html(tooltipHtml);
+        $tooltip.find('.code-point').mousedown(function (event) {
+            if (event.buttons === 1) {
+                onClickCodePoint($(this), 'input');
+            } else if (event.buttons === 2) {
+                if ($(this).attr('data-code')) onClickCodePoint($(this), 'go-to-char');
+            }
+        })
+        reallyShowTooltip(position);
+        
+        // set mouse hover text for code points
+        codes.forEach(code => {
+            ipcRenderer.send('asynchronous-message', {
+                'type': 'get-char-name',
+                'code': code
+            })
+        });
+    } else {
+        ipcRenderer.send('asynchronous-message', {
+            'type': 'get-char',
+            'code': code,
+            'sender-position': (options && options.isEditor) ? {
+                left: position.left,
+                top: position.top - 5
+            } : position
+        });
+    }
 }
 
 const hideTooltip = () => {
@@ -730,7 +821,7 @@ const toHex = code => {
     return hex;
 }
 
-const getHtmlChar = (code, isEmojiSeq) => {
+const getHtmlChar = (code) => {
     var codes = [];
     if (typeof code === 'string') {
         code.match(/\b[0-9A-F]+\b/gi).forEach(match => {
@@ -740,9 +831,13 @@ const getHtmlChar = (code, isEmojiSeq) => {
         codes.push(code);
     } else throw 'getHtmlChar: invalid argument.';
 
-    var isEmoji = isEmojiSeq || (codes.length === 1 && emojiData.includes(codes[0]));
+    var sequence = codes.length === 1 ? undefined : getSequence(code);
+    var isEmoji = (codes.length === 1 && emojiData.includes(codes[0])) ||
+        (codes.length === 2 && codes[1] === 0xfe0f) ||
+        (sequence && /\bEmoji\b/.test(sequence.type));
+    var isFlagEmoji = sequence && sequence.name.startsWith('FLAG: ');
     var html = '';
-    var fontClass = isEmoji ? 'emoji' : 'u' + toHex(Math.floor(codes[0] / 0x400) * 0x400).toLowerCase();
+    var fontClass = isFlagEmoji ? 'flag-emoji' : isEmoji ? 'emoji' : 'u' + toHex(Math.floor(codes[0] / 0x400) * 0x400).toLowerCase();
 
     if (codes.length === 1) {
         var code = codes[0];
@@ -1011,6 +1106,27 @@ const getIndexItem = thousand => {
 
 const htmlEncode = text => $('<div>').text(text.replace(' ', '\u00a0')).html();
 
+const getSequence = codes => {
+    codes = codes.toUpperCase();
+    for (var i = 0; i < sequenceData.length; i++) {
+        if (sequenceData[i].codes === codes) return sequenceData[i];
+    }
+    return undefined;
+}
+
+const getEmojiVariants = codes => {
+    var regex = / (20E3|FE0F|1F3F[B-F])\b/g;
+    codes = codes.toUpperCase();
+    var base = codes.replace(regex, '');
+    var result = [];
+    sequenceData.forEach(sequence => {
+        if (sequence.codes !== codes && sequence.codes.replace(regex, '') === base)
+            result.push(sequence);
+    });
+    if (result.length === 0) return null;
+    return result;
+}
+
 String.prototype.replaceAll = function(search, replacement) {
     return this.split(search).join(replacement);
 };
@@ -1021,6 +1137,7 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
         // initialise unicode blocks and palettes
         case 'init':
             emojiData = arg.emoji;
+            sequenceData = arg.sequences;
             isMac = arg['is-mac'];
 
             arg.blocks.forEach(block => {
@@ -1083,10 +1200,10 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                             <div class="palette-info-name">${palette.name}</div>
                             <div class="palette-info-description">${palette.description}</div>
                             <div class="palette-info-samples">
-                                <div class="code-point-char">${getHtmlChar(palette.sections[0].chars[0], /\bFE0F\b/i.test(palette.sections[0].chars[0]))}</div>
-                                <div class="code-point-char">${getHtmlChar(palette.sections[0].chars[1], /\bFE0F\b/i.test(palette.sections[0].chars[1]))}</div>
-                                <div class="code-point-char">${getHtmlChar(palette.sections[0].chars[2], /\bFE0F\b/i.test(palette.sections[0].chars[2]))}</div>
-                                <div class="code-point-char">${getHtmlChar(palette.sections[0].chars[3], /\bFE0F\b/i.test(palette.sections[0].chars[3]))}</div>
+                                <div class="code-point-char">${getHtmlChar(palette.sections[0].chars[0])}</div>
+                                <div class="code-point-char">${getHtmlChar(palette.sections[0].chars[1])}</div>
+                                <div class="code-point-char">${getHtmlChar(palette.sections[0].chars[2])}</div>
+                                <div class="code-point-char">${getHtmlChar(palette.sections[0].chars[3])}</div>
                                 <div class="palette-info-samples-ellipsis"></div>
                             </div>
                         </div>
@@ -1113,8 +1230,7 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                 break;
             }
 
-            var codeString = code.toString(16).toUpperCase();
-            while (codeString.length < 4) codeString = '0' + codeString;
+            var codeString = toHex(code);
 
             var displayName = char['type'] == 'char' ?
                 char['name'].replace(/&lt;([^&]+)&gt;/g, '<span class="dim">&lt;$1&gt;</span>') :
@@ -1122,6 +1238,8 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                 char['type'] == 'noncharacter' ? '<span class="dim">&lt;not a character&gt;</span>' :
                 '<span class="dim">&lt;unassigned&gt;</span>';
             if (displayName === undefined) displayName = '';
+
+            var variants = getEmojiVariants(codeString);
 
             var $tooltip = $('#tooltip-container');
             var tooltipHtml =
@@ -1171,6 +1289,20 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                 });
                 tooltipHtml += `</div>`;
             }
+            if (variants) {
+                tooltipHtml +=
+                    `<div class="tooltip-char-property-header">Variants</div>
+                    <div class="tooltip-code-list">`;
+                variants.forEach(variant => {
+                    tooltipHtml += 
+                    `<div class="code-point" data-codes="${variant.codes}" data-title>
+                        <div class="code-point-char">${getHtmlChar(variant.codes)}</div>
+                        <div class="code-point-number"><div>${variant.codes.replace(/ .+/, '...')}</div></div>
+                        <div class="code-point-title">${variant.codes}<br/>${variant.name}<br/>(click to enter)</div>
+                    </div>`
+                });
+                tooltipHtml += `</div>`;
+            }
             if (char['age']) tooltipHtml +=
                     `<div class="tooltip-char-property-header">Introduced in</div>
                     <div class="tooltip-char-property">${char['age']}</div>`;
@@ -1178,6 +1310,13 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                 `</div>`;
 
             $tooltip.html(tooltipHtml);
+            $tooltip.find('.code-point').mousedown(function (event) {
+                if (event.buttons === 1) {
+                    onClickCodePoint($(this), 'input');
+                } else if (event.buttons === 2) {
+                    if ($(this).attr('data-code')) onClickCodePoint($(this), 'go-to-char');
+                }
+            });
 
             // set mouse hover text for cross-refs
             if (char['cross-references']) {
@@ -1189,16 +1328,7 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                 });
             }
         
-            // compute the position of the tooltip
-            var $container = $('#main-container');
-            var charHeight = $('.tab[data-header=Search]').attr('data-selected') ? 60 : 50;
-            var left = Math.min(position.left, $container.width() - $tooltip.width() - 2);
-            var top = position.top + charHeight;
-            if (top + $tooltip.height() > $('#root').height()) {
-                top = Math.max(0, position.top - $tooltip.height());
-            }
-            $tooltip.css('left', left).css('top', top);
-            $tooltip.show(200);
+            reallyShowTooltip(position);
 
             break;
 
@@ -1206,14 +1336,7 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
         case 'get-char-name':
             var char = arg['char'];
             $(`.tooltip-code-list .code-point[data-code=${char['code']}]`)
-                .attr('data-title', char['name'])
-                .mousedown(function (event) {
-                    if (event.buttons === 1) {
-                        onClickCodePoint($(this), 'input');
-                    } else if (event.buttons === 2) {
-                        onClickCodePoint($(this), 'go-to-char');
-                    }
-                });
+                .attr('data-title', char['name']);
             $(`.tooltip-code-list .code-point[data-code=${char['code']}] .code-point-title`)
                 .html(char['name'] + '<br/>(left click to enter; right click to show in table)');
             $(`.tooltip-code-list .code-point[data-code=${char['code']}] .code-point-char`)

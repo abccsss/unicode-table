@@ -1,3 +1,4 @@
+@font-face { font-family: 'Noto Emoji'; src: url(../resources/fonts/NotoColorEmoji.ttf); }
 @font-face { font-family: 'u0000'; src: url(../resources/fonts/u0000.woff) format('woff'); }
 @font-face { font-family: 'u0400'; src: url(../resources/fonts/u0400.woff) format('woff'); }
 @font-face { font-family: 'u0800'; src: url(../resources/fonts/u0800.woff) format('woff'); }
@@ -674,12 +675,12 @@ input::selection {
 }
 
 .code-point:not([data-disabled]):hover .code-point-number {
-    color: var(--color-text-tertiary);
+    color: var(--color-text-secondary);
 }
 
 .code-point-number {
     font-size: 12px;
-    color: var(--color-text-dim);
+    color: var(--color-text-tertiary);
 }
 
 .code-block-sub-expander {
@@ -729,7 +730,8 @@ input::selection {
     color: var(--color-code);
     font-size: 15px;
     margin-top: -5px;
-    margin-bottom: -2px;
+    word-spacing: 2px;
+    line-height: 15px;
     -webkit-user-select: text;
 }
 
@@ -807,6 +809,14 @@ span.code {
     margin: 0;
 }
 
+#tooltip-container .tooltip-code-list .code-point-number {
+    color: var(--color-text-dim);
+}
+
+#tooltip-container .tooltip-code-list .code-point:hover .code-point-number {
+    color: var(--color-text-secondary);
+}
+
 .code-point[data-title] {
     position: relative;
 }
@@ -834,6 +844,11 @@ span.code {
 .emoji {
     margin-bottom: 8%;
     font-family: 'Segoe UI Emoji';
+}
+
+.flag-emoji {
+    margin-bottom: 8%;
+    font-family: 'Noto Emoji';
 }
 
 #index-container {
@@ -945,7 +960,7 @@ span.index-zeroes {
 }
 
 #editor-chars .code-point:hover .code-point-number {
-    color: var(--color-text-dim);
+    color: var(--color-text-tertiary);
 }
 
 .caret {
