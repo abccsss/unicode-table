@@ -777,11 +777,13 @@ const showTooltip = ($element, options) => {
                 </div>`
             });
         }
-        tooltipHtml += 
-                `</div>
-                <div class="tooltip-char-property-header">Introduced in</div>
-                <div class="tooltip-char-property">${sequence.age.replace('E', 'Emoji ')}</div>
-            </div>`;
+        tooltipHtml += `</div>`;
+        if (sequence.age && sequence.age !== 'E0.0') {
+            tooltipHtml += 
+                `<div class="tooltip-char-property-header">Introduced in</div>
+                <div class="tooltip-char-property">${sequence.age.replace('E', 'Emoji ')}</div>`;
+        }
+        tooltipHtml += `</div>`;
         $tooltip.html(tooltipHtml);
         $tooltip.find('.code-point').mousedown(function (event) {
             if (event.buttons === 1) {

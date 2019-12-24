@@ -512,6 +512,7 @@ input::selection {
     display: flex;
     justify-content: center;
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 #search-container {
@@ -527,6 +528,7 @@ input::selection {
     display: flex;
     width: 100%;
     max-width: 900px;
+    margin: 0 20px;
 }
 
 #search-input {
@@ -539,7 +541,7 @@ input::selection {
 #table-container, #palettes-container, #results-container {
     width: 100%;
     max-width: 900px;
-    margin-right: -14px;
+    margin-left: 14px;
     flex-direction: column;
 }
 
@@ -1236,6 +1238,12 @@ span.index-zeroes {
     flex-grow: 1;
     width: 250px;
     margin: 5px;
+}
+
+@media screen and (min-width: 800px) {
+    .palette-info:nth-child(6n+1):nth-last-child(4), .palette-info:nth-child(6n+2):nth-last-child(3), .palette-info:nth-child(6n+0):nth-last-child(2), .palette-info:nth-child(6n+1):nth-last-child(1) {
+        width: 300px;
+    }
 }
 
 .palette-info:hover {

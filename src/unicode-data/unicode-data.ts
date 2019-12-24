@@ -689,7 +689,7 @@ export default class UnicodeData {
                     this.sequenceData.push({
                         codes: result[1].trim().toUpperCase(),
                         type: result[2].trim().replace(/_/g, ' '),
-                        name: result[3].trim().toUpperCase(),
+                        name: result[3].trim().toUpperCase().replace('\\X{23}', '#'),
                         age: result[4].trim(),
                     });
                 });
