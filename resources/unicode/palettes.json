@@ -95,7 +95,7 @@
             "chars": ["00AD","200C","200D","200E","200F","2028","2029","202A","202B","202C","202D","202E","2060","2061","2062","2063","2064","2066","2067","2068","2069","206A","206B","206C","206D","206E","206F","FFF9","FFFA","FFFB"]
         }]
     }, {
-        "name": "Superscripts and Subscripts",
+        "name": "Superscripts and subscripts",
         "description": "Numbers and letters.",
         "sections": [{
             "name": "Numbers",
