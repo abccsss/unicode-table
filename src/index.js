@@ -532,7 +532,7 @@ const onDelete = () => {
 }
 
 const onSelectAll = () => {
-    caretPosition = 0;
+    caretPosition = actualIndex(editorText, editorText.length);
     changeSelection({start: 0, end: actualIndex(editorText, editorText.length)});
 }
 
@@ -557,14 +557,31 @@ const onRedo = () => {
     }
 }
 
-const updateEditorChars = () => {
+const insertAtIndex = (i, $parent, child) => {
+    if (i === 0) {
+        $parent.prepend(child);        
+    } else {
+        $parent.children(`:nth-child(${(i)})`).after(child);
+    }
+}
+
+const updateEditorChars = (selection, newText) => {
     var $chars = $('#editor-chars');
-    $chars.html('');
-    for (var i = 0; i < editorText.length; i++) {
-        var code = editorText.codePointAt(i);
-        if (code >= 0x10000) i++; // is surrogate pair
-        var cp = getEditorChar(code);
-        $chars.append(cp);
+
+    if (!selection) {
+        $chars.html('');
+        for (var i = 0; i < editorText.length; i++) {
+            var code = editorText.codePointAt(i);
+            if (code >= 0x10000) i++; // is surrogate pair
+            $chars.append(getEditorChar(code));
+        }
+    } else {
+        $chars.children().slice(selection.start, selection.end).remove();
+        for (var i = 0; i < newText.length; i++) {
+            var code = newText.codePointAt(i);
+            if (code >= 0x10000) i++; 
+            insertAtIndex(selection.start + i, $chars, getEditorChar(code));
+        }
     }
 
     if (editorText.length === 0) {
@@ -620,7 +637,7 @@ const changeText = newText => {
     editorText = editorText.substring(0, stringIndex(editorText, selection.start)) + newText + 
         editorText.substring(stringIndex(editorText, selection.end));
 
-    updateEditorChars();
+    updateEditorChars(selection, newText);
 
     // push undo stack
     if (newText != '' || selection.length != 0) {
@@ -658,6 +675,16 @@ const stringIndex = (text, actualIndex) => {
         if (code >= 0x10000) index++; 
     }
     return index;
+}
+
+const utf8length = text => {
+    var length = 0;
+    for (var i = 0; i < text.length; i++) {
+        var code = text.codePointAt(i);
+        if (code >= 0x10000) i++;
+        length += code < 0x80 ? 1 : code < 0x800 ? 2 : code < 0x10000 ? 3 : 4;
+    }
+    return length;
 }
 
 const changeSelection = newSelection => {
@@ -710,6 +737,21 @@ const changeSelection = newSelection => {
             $editor.scrollLeft(0);
         } else if (caretPosition === actualIndex(editorText, editorText.length)) {
             $editor.scrollLeft($editor.scrollLeft() + caretPos - editorWidth);
+        }
+
+        // status bar
+        var length = actualIndex(editorText, editorText.length);
+        if (selection.length === 0) {
+            $('#status-bar-char-count').text(`Characters: ${length}`);
+            $('#status-bar-uft8-length').text(`UTF-8 length: ${utf8length(editorText)}`);
+            $('#status-bar-uft16-length').text(`UTF-16 length: ${editorText.length}`);
+            $('#status-bar-caret-position').text(`Position: ${caretPosition}`);
+        } else {
+            var selectedText = editorText.substring(stringIndex(editorText, selection.start), stringIndex(editorText, selection.end));
+            $('#status-bar-char-count').text(`Characters: ${length} (${selection.length})`);
+            $('#status-bar-uft8-length').text(`UTF-8 length: ${utf8length(editorText)} (${utf8length(selectedText)})`);
+            $('#status-bar-uft16-length').text(`UTF-16 length: ${editorText.length} (${selectedText.length})`);
+            $('#status-bar-caret-position').text(`Position: ${selection.start}–${selection.end}`);
         }
     }
 }
