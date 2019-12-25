@@ -577,10 +577,10 @@ const updateEditorChars = (selection, newText) => {
         }
     } else {
         $chars.children().slice(selection.start, selection.end).remove();
-        for (var i = 0; i < newText.length; i++) {
+        for (var i = 0, j = 0; i < newText.length; i++, j++) {
             var code = newText.codePointAt(i);
             if (code >= 0x10000) i++; 
-            insertAtIndex(selection.start + i, $chars, getEditorChar(code));
+            insertAtIndex(selection.start + j, $chars, getEditorChar(code));
         }
     }
 
