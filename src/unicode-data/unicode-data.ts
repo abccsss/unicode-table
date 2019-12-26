@@ -12,7 +12,7 @@ function toHex(code: number): string {
 }
 
 const gcName = {'Cc':'Control','Cf':'Format','Cn':'Unassigned','Co':'Private Use','Cs':'Surrogate','Ll':'Lowercase Letter','Lm':'Modifier Letter','Lo':'Other Letter','Lt':'Titlecase Letter','Lu':'Uppercase Letter','Mc':'Spacing Mark','Me':'Enclosing Mark','Mn':'Nonspacing Mark','Nd':'Decimal Number','Nl':'Letter Number','No':'Other Number','Pc':'Connector Punctuation','Pd':'Dash Punctuation','Pe':'Close Punctuation','Pf':'Final Punctuation','Pi':'Initial Punctuation','Po':'Other Punctuation','Ps':'Open Punctuation','Sc':'Currency Symbol','Sk':'Modifier Symbol','Sm':'Math Symbol','So':'Other Symbol','Zl':'Line Separator','Zp':'Paragraph Separator','Zs':'Space Separator'}
-const ageName = {'2.0':'Unicode 2.0 (1996)','2.1':'Unicode 2.1 (1998)','3.0':'Unicode 3.0 (1999)','3.1':'Unicode 3.1 (2001)','3.2':'Unicode 3.2 (2002)','4.0':'Unicode 4.0 (2003)','4.1':'Unicode 4.1 (2005)','5.0':'Unicode 5.0 (2006)','5.1':'Unicode 5.1 (2008)','5.2':'Unicode 5.2 (2009)','6.0':'Unicode 6.0 (2010)','6.1':'Unicode 6.1 (2012)','6.2':'Unicode 6.2 (2012)','6.3':'Unicode 6.3 (2013)','7.0':'Unicode 7.0 (2014)','8.0':'Unicode 8.0 (2015)','9.0':'Unicode 9.0 (2016)','10.0':'Unicode 10.0 (2017)','11.0':'Unicode 11.0 (2018)','12.0':'Unicode 12.0 (2019)','12.1':'Unicode 12.1 (2019)'};
+const ageName = {'2.0':'Unicode 2.0 (1996)','2.1':'Unicode 2.1 (1998)','3.0':'Unicode 3.0 (1999)','3.1':'Unicode 3.1 (2001)','3.2':'Unicode 3.2 (2002)','4.0':'Unicode 4.0 (2003)','4.1':'Unicode 4.1 (2005)','5.0':'Unicode 5.0 (2006)','5.1':'Unicode 5.1 (2008)','5.2':'Unicode 5.2 (2009)','6.0':'Unicode 6.0 (2010)','6.1':'Unicode 6.1 (2012)','6.2':'Unicode 6.2 (2012)','6.3':'Unicode 6.3 (2013)','7.0':'Unicode 7.0 (2014)','8.0':'Unicode 8.0 (2015)','9.0':'Unicode 9.0 (2016)','10.0':'Unicode 10.0 (2017)','11.0':'Unicode 11.0 (2018)','12.0':'Unicode 12.0 (2019)','12.1':'Unicode 12.1 (2019)','E1.0':'Emoji 1.0 (2015)','E2.0':'Emoji 2.0 (2015)','E3.0':'Emoji 3.0 (2016)','E4.0':'Emoji 4.0 (2016)','E5.0':'Emoji 5.0 (2017)','E11.0':'Emoji 11.0 (2018)','E12.0':'Emoji 12.0 (2019)','E12.1':'Emoji 12.1 (2019)'};
 
 export class UnicodeCharacter {
     age?: string;
@@ -146,6 +146,11 @@ export default class UnicodeData {
         }
         if (existsSync(`./resources/unicode/ucd.sequences.json`)) {
             this.sequenceData = JSON.parse(readFileSync(`./resources/unicode/ucd.sequences.json`).toString());
+            this.sequenceData.forEach(sequence => {
+                if (sequence.age && sequence.age.startsWith('E')) {
+                    sequence.age = ageName[sequence.age];
+                }
+            });
         }
         if (existsSync('./resources/unicode/palettes.json')) {
             this.paletteData = JSON.parse(readFileSync(`./resources/unicode/palettes.json`).toString());

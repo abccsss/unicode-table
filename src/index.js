@@ -854,7 +854,7 @@ const showTooltip = ($element, options) => {
         if (sequence.age && sequence.age !== 'E0.0') {
             tooltipHtml += 
                 `<div class="tooltip-char-property-header">Introduced in</div>
-                <div class="tooltip-char-property">${sequence.age.replace('E', 'Emoji ')}</div>`;
+                <div class="tooltip-char-property">${sequence.age}</div>`;
         }
         tooltipHtml += `</div>`;
         $tooltip.html(tooltipHtml);
