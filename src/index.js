@@ -827,7 +827,7 @@ const showTooltip = ($element, options) => {
                 <div class="tooltip-char-property">${sequence.type}</div>`;
         tooltipHtml +=
                 `<div class="tooltip-char-property-header">Code Points</div>
-                <div class="tooltip-code-list">`;
+                <div class="code-list">`;
         codes.forEach(code => {
             tooltipHtml += 
                 `<div class="code-point" data-code="${code}">
@@ -840,7 +840,7 @@ const showTooltip = ($element, options) => {
             tooltipHtml += 
                 `</div>
                 <div class="tooltip-char-property-header">Variants</div>
-                <div class="tooltip-code-list">`;
+                <div class="code-list">`;
             variants.forEach(variant => {
                 tooltipHtml += 
                 `<div class="code-point" data-codes="${variant.codes}" data-title>
@@ -1354,7 +1354,7 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
             if (char['cross-references']) {
                 tooltipHtml +=
                     `<div class="tooltip-char-property-header">Cross References</div>
-                    <div class="tooltip-code-list">`;
+                    <div class="code-list">`;
                 char['cross-references'].forEach(item => {
                     var cfCode = parseInt(item, 16);
                     tooltipHtml += 
@@ -1369,7 +1369,7 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
             if (variants) {
                 tooltipHtml +=
                     `<div class="tooltip-char-property-header">Variants</div>
-                    <div class="tooltip-code-list">`;
+                    <div class="code-list">`;
                 variants.forEach(variant => {
                     tooltipHtml += 
                     `<div class="code-point" data-codes="${variant.codes}" data-title>
@@ -1415,14 +1415,14 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
         // set mouse hover text and click handler for cross-refs in tooltip
         case 'get-char-name':
             var char = arg['char'];
-            $(`.tooltip-code-list .code-point[data-code=${char['code']}]`)
+            $(`.code-list .code-point[data-code=${char['code']}]`)
                 .attr('data-title', char['name'])
                 .hover(function () {
                     onShowTitle($(this));
                 });
-            $(`.tooltip-code-list .code-point[data-code=${char['code']}] .code-point-title`)
+            $(`.code-list .code-point[data-code=${char['code']}] .code-point-title`)
                 .html(char['name'] + '<br/>(left click to enter; right click to show in table)');
-            $(`.tooltip-code-list .code-point[data-code=${char['code']}] .code-point-char`)
+            $(`.code-list .code-point[data-code=${char['code']}] .code-point-char`)
                 .html(getHtmlChar(char['code']));
             break;
 
@@ -1571,6 +1571,78 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                             }
 
                             $('#results').append(elem);
+                            break;
+                        case 'sequence':
+                            var codes = result.codes.map(i => i.toString(16).toUpperCase());
+                            var sequence = getSequence(codes.join(' '));
+                            if (!sequence) break;
+
+                            var codesString = codes.map(s => 'U+' + s).join(' ');
+
+                            // show highlights in sequence name using <span class="emphasis">
+                            var name = sequence.name;
+                            result.matchedProperties.forEach(item => {
+                                if (item.startsWith('name:')) {
+                                    var keyword = item.substring(5).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                    name = name.replace(new RegExp('\\b' + keyword + '\\b', 'gi'), '<<$&>>');
+                                }
+                            });
+                            name = name.replaceAll('>> <<', ' ').replaceAll('>>-<<', '-').replaceAll('>><<', '')
+                                .replaceAll('<<', '<span class="emphasis">').replaceAll('>>', '</span>');
+
+                            var html = `<div class="search-result">
+                                <div class="code-point" data-codes="${sequence.codes}" data-title>
+                                    <div class="code-point-char">${getHtmlChar(sequence.codes)}</div>
+                                    <div class="code-point-title">(click to enter)</div>
+                                </div>
+                                <div class="result-contents">
+                                <div class="result-char-code">${codesString}</div>
+                                <div class="result-char-name">${name}</div>
+                                <table>`;
+                            if (sequence.type)
+                                html +=
+                                    `<tr><td class="result-property-header">Type&nbsp;</td>
+                                    <td class="result-property">${sequence.type}</td></tr>`;
+                            html +=
+                                    `<tr><td class="result-property-header vertical-center">Code Points</td>
+                                    <td class="result-property">
+                                        <div class="code-list">`;
+                            result.codes.forEach(code => {
+                                html += 
+                                            `<div class="code-point" data-code="${code}" data-title>
+                                                <div class="code-point-char">${getHtmlChar(code)}</div>
+                                                <div class="code-point-number"><div>${toHex(code)}</div></div>
+                                                <div class="code-point-title"></div>
+                                            </div>`
+                            });
+                            html += `</div></td></tr>`;
+                            html += `</table></div>`;
+                            var elem = $(html);
+
+                            if (isFirst) {
+                                isFirst = false;
+                                defaultText = result.codes.map(i => String.fromCodePoint(i)).join('');
+                            }
+                            elem.find('.code-point').mousedown(function (event) {
+                                if (event.buttons === 1) { // left button
+                                    onClickCodePoint($(this), 'input');
+                                } else if (event.buttons === 2) { // left button
+                                    onClickCodePoint($(this), 'go-to-char');
+                                }
+                            });
+                            elem.find('.code-point[data-title]').hover(function () {
+                                onShowTitle($(this));
+                            });
+
+                            $('#results').append(elem);
+
+                            // set mouse hover text for code points
+                            result.codes.forEach(code => {
+                                ipcRenderer.send('asynchronous-message', {
+                                    'type': 'get-char-name',
+                                    'code': code
+                                });
+                            });
                             break;
                     }
                 });

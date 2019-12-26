@@ -421,13 +421,41 @@ export default class UnicodeData {
                         }
                     }
                     if (flag) {
+                        var wordCount = name.split(' ').length;
                         pushResult('char', [ char.code ], matches.map(
                             match => 'name:' + match
-                        ), 5);
+                        ), wordCount === keywordRegex.length ? 5.5 : 5);
                     }
                 }
             }
         }
+
+        // sequences
+        this.sequenceData.forEach(sequence => {
+            if (keywords.length > 0 && sequence.name) {
+                var name = sequence.name;
+                var matches: string[] = [];
+                var flag = true;
+                for (var j = 0; j < keywordRegex.length; j++) {
+                    var m = name.match(keywordRegex[j]);
+                    if (m) {
+                        m.forEach(item => {
+                            if (!matches.includes(item)) matches.push(item);
+                        });
+                    } else {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) {
+                    pushResult('sequence', sequence.codes.split(' ').map(
+                        s => parseInt(s, 16)
+                    ), matches.map(
+                        match => 'name:' + match
+                    ), 5);
+                }
+            }
+        });
 
         // ...
 
@@ -449,6 +477,9 @@ export default class UnicodeData {
                         result.char = char;
                         if (++finished === results.length) callback(results);
                     });
+                    break;
+                case 'sequence':
+                    if (++finished === results.length) callback(results);
                     break;
             }
         });

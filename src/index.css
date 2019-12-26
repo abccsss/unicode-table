@@ -809,29 +809,35 @@ span.code {
     background-color: var(--color-border);
 }
 
-.tooltip-code-list {
+.code-list {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
 }
 
-#tooltip-container .tooltip-code-list .code-point {
+#tooltip-container .code-list .code-point,
+.search-result .code-list .code-point {
     margin: 5px 10px 0 0;
     width: 35px;
+    height: auto;
+    -webkit-user-select: none;
 }
 
-#tooltip-container .tooltip-code-list .code-point-char {
+#tooltip-container .code-list .code-point-char,
+.search-result .code-list .code-point-char {
     font-size: 20px;
     height: 35px;
     width: 35px;
     margin: 0;
 }
 
-#tooltip-container .tooltip-code-list .code-point-number {
+#tooltip-container .code-list .code-point-number,
+.search-result .code-list .code-point-number {
     color: var(--color-text-dim);
 }
 
-#tooltip-container .tooltip-code-list .code-point:hover .code-point-number {
+#tooltip-container .code-list .code-point:hover .code-point-number,
+.search-result .code-list .code-point:hover .code-point-number {
     color: var(--color-text-secondary);
 }
 
@@ -1161,7 +1167,7 @@ span.index-zeroes {
 }
 
 .search-result .code-point-char {
-    font-size: 36px;
+    font-size: 32px;
     height: 60px;
     width: 60px;
     margin: 0;
@@ -1179,6 +1185,7 @@ span.index-zeroes {
     color: var(--color-code);
     font-size: 15px;
     -webkit-user-select: text;
+    word-spacing: 2px;
 }
 
 .result-char-name {
@@ -1229,6 +1236,10 @@ span.index-zeroes {
     border-radius: 3px;
     padding: 2px 5px;
     background-color: var(--color-code-emphasis);
+}
+
+td.vertical-center {
+    vertical-align: middle !important;
 }
 
 #palette-content {
