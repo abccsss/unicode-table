@@ -424,6 +424,9 @@ const loadPaletteRow = codes => {
                     onClickCodePoint($(this), 'input');
                 }
             });
+            div.hover(function () {
+                onShowTitle($(this));
+            });
         } else if (code === 'xxxx') {
             div = $(`<div class="code-point">`);
         }
@@ -458,6 +461,14 @@ const hidePopup = () => {
         queue: false,
         complete: () => $('#popup-container').css('display', 'none')
     });
+}
+
+const onShowTitle = $element => {
+    var $title = $element.find('.code-point-title');
+    if ($title.length === 1) { 
+        var left = -($element.offset().left + $title.width() - $('#main-container').width() + 5);
+        if (left < 0) $title.css('left', left);
+    }
 }
 
 const onCharHover = ($element, options) => {
@@ -833,7 +844,10 @@ const showTooltip = ($element, options) => {
             } else if (event.buttons === 2) {
                 if ($(this).attr('data-code')) onClickCodePoint($(this), 'go-to-char');
             }
-        })
+        });
+        $tooltip.find('.code-point[data-title]').hover(function () {
+            onShowTitle($(this));
+        });
         reallyShowTooltip(position);
         
         // set mouse hover text for code points
@@ -1361,6 +1375,9 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                     if ($(this).attr('data-code')) onClickCodePoint($(this), 'go-to-char');
                 }
             });
+            $tooltip.find('.code-point[data-title]').hover(function () {
+                onShowTitle($(this));
+            });
 
             // set mouse hover text for cross-refs
             if (char['cross-references']) {
@@ -1380,7 +1397,10 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
         case 'get-char-name':
             var char = arg['char'];
             $(`.tooltip-code-list .code-point[data-code=${char['code']}]`)
-                .attr('data-title', char['name']);
+                .attr('data-title', char['name'])
+                .hover(function () {
+                    onShowTitle($(this));
+                });;
             $(`.tooltip-code-list .code-point[data-code=${char['code']}] .code-point-title`)
                 .html(char['name'] + '<br/>(left click to enter; right click to show in table)');
             $(`.tooltip-code-list .code-point[data-code=${char['code']}] .code-point-char`)
@@ -1514,6 +1534,9 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                                     if (event.buttons === 1) { // left button
                                         onClickCodePoint($(this), 'input');
                                     }
+                                });
+                                elem.find('.code-point[data-title]').hover(function () {
+                                    onShowTitle($(this));
                                 });
                                 if (isPrivateUse) {
                                     elem.find('.code-point').hover(function () {
