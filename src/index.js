@@ -495,6 +495,11 @@ const getEditorChar = code => {
             isEditor: true
         });
     }, onCharHoverOut);
+    div.mousedown(function (event) {
+        if (event.buttons === 2) { // right button
+            onClickCodePoint($(this), 'go-to-char');
+        }
+    })
     return div;
 }
 
@@ -1085,8 +1090,6 @@ const loadCodeBlock = (first, rows, noExpandFirst) => {
 };
 
 const goToChar = (code) => {
-    $('.tab[data-header=Table]').trigger('click');
-
     code = parseInt(code);
 
     var $block = $('.code-block');
@@ -1094,8 +1097,9 @@ const goToChar = (code) => {
         var $item = $($block[index]);
         return parseInt($item.attr('data-last-cp')) >= code;
     }).first();
-    if ($block.length === 0) return;
-    code = Math.max(parseInt($block.attr('data-first-cp')), code);
+    if ($block.length === 0 || $block.attr('data-first-cp') > code) return;
+    $('.tab[data-header=Table]').trigger('click');
+    
     var positionTop;
 
     if (!$block.attr('data-expanded')) {
