@@ -316,6 +316,13 @@ $('.tab').click(function () {
 // search
 let searchTimeout;
 let searchText;
+let defaultText;
+
+$(document).ready(function () {
+    ipcRenderer.send('asynchronous-message', {
+        type: 'init-search'
+    });
+});
 
 $('#search-input').on('compositionstart', function () {
     $(this).attr('data-composing', true);
@@ -336,13 +343,21 @@ $('#search-input').on('input', function () {
             searchTimeout = setTimeout(() => {
                 searchTimeout = undefined;
                 onSearch(text);
-            }, 1000);
+            }, 300);
         } else {
             if (searchTimeout) 
                 clearTimeout(searchTimeout);
         }
     }
 });
+
+$('#search-input').keydown(function (event) {
+    if (event.key === 'Enter') {
+        setTimeout(() => {
+            if (defaultText) changeText(defaultText);
+        }, 0);
+    }
+})
 
 // palettes
 let palettes;
@@ -1404,7 +1419,7 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                 .attr('data-title', char['name'])
                 .hover(function () {
                     onShowTitle($(this));
-                });;
+                });
             $(`.tooltip-code-list .code-point[data-code=${char['code']}] .code-point-title`)
                 .html(char['name'] + '<br/>(left click to enter; right click to show in table)');
             $(`.tooltip-code-list .code-point[data-code=${char['code']}] .code-point-char`)
@@ -1437,10 +1452,12 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
             $('#main-container').scrollTop(0);
 
             var results = arg['results'];
+            defaultText = null;
             if (results.length === 0) {
                 $('#no-results').text('No results found.').css('display', 'block');
             } else {
                 $('#no-results').css('display', 'none');
+                var isFirst = true;
 
                 results.forEach(result => {
                     switch (result.type) {
@@ -1525,6 +1542,10 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                             html += `</table></div>`;
                             var elem = $(html);
 
+                            if (isFirst) {
+                                isFirst = false;
+                                defaultText = String.fromCodePoint(char.code);
+                            }
                             if (char.type === 'char' && !isPrivateUse) {
                                 elem.find('.code-point').mousedown(function (event) {
                                     if (event.buttons === 1) { // left button

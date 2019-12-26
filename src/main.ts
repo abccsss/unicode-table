@@ -176,6 +176,9 @@ ipcMain.on('asynchronous-message', (event, arg) => {
                 });
             });
             break;
+        case 'init-search':
+            unicodeData.search('', () => { });
+            break;
         case 'search':
             unicodeData.search(arg['query'], results => {
                 event.sender.send('asynchronous-reply', {

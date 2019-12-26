@@ -260,6 +260,8 @@ export default class UnicodeData {
             return;
         }
 
+        if (!text) return;
+
         var results: UnicodeSearchResult[] = [];
         var trimmedText = text.trim().toLowerCase();
         var normalisedText = normaliseString(text);
