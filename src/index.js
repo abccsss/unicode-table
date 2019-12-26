@@ -1573,7 +1573,7 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                             $('#results').append(elem);
                             break;
                         case 'sequence':
-                            var codes = result.codes.map(i => i.toString(16).toUpperCase());
+                            var codes = result.codes.map(i => toHex(i).toUpperCase());
                             var sequence = getSequence(codes.join(' '));
                             if (!sequence) break;
 
