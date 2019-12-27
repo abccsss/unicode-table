@@ -318,12 +318,6 @@ let searchTimeout;
 let searchText;
 let defaultText;
 
-$(document).ready(function () {
-    ipcRenderer.send('asynchronous-message', {
-        type: 'init-search'
-    });
-});
-
 $('#search-input').on('compositionstart', function () {
     $(this).attr('data-composing', true);
 });
@@ -1294,6 +1288,11 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                     $group.append(elem);
                 });
                 $list.append($group);
+            });
+
+            // init search
+            ipcRenderer.send('asynchronous-message', {
+                type: 'init-search'
             });
             break;
 

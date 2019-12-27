@@ -1,6 +1,6 @@
-import { createReadStream, existsSync, writeFileSync, readFile, readFileSync, exists } from 'fs';
+import { createReadStream, existsSync, writeFileSync, readFile, readFileSync } from 'fs';
 import { createInterface } from "readline";
-var XmlStream = require('xml-stream');
+try { var XmlStream = require('xml-stream'); } catch {}
 
 function toHex(code: number): string {
     if (code < 0 || code > 0x10FFFF) {
@@ -128,6 +128,7 @@ const searchSynonyms: string[][] = [
 const normaliseString = (s: string) => s.normalize('NFKD').replace(/⁄/g, '/');
 
 export default class UnicodeData {
+    resourcesDir: string;
     charData: UnicodeCharacter[][] = [];
     blockData: UnicodeBlock[];
     emojiData: number[];
@@ -138,29 +139,30 @@ export default class UnicodeData {
     // is not undefined only when initialising
     onInitialised: (() => void)[] = [];
 
-    constructor(creatingDataFiles?: boolean) { 
+    constructor(resourcesDir: string, creatingDataFiles?: boolean) { 
+        this.resourcesDir = resourcesDir;
         if (!creatingDataFiles)
-            createDataFiles();
-        if (existsSync(`./resources/unicode/ucd.emoji.json`)) {
-            this.emojiData = JSON.parse(readFileSync(`./resources/unicode/ucd.emoji.json`).toString());
+            createDataFiles(resourcesDir);
+        if (existsSync(`${this.resourcesDir}/ucd.emoji.json`)) {
+            this.emojiData = JSON.parse(readFileSync(`${this.resourcesDir}/ucd.emoji.json`).toString());
         }
-        if (existsSync(`./resources/unicode/ucd.sequences.json`)) {
-            this.sequenceData = JSON.parse(readFileSync(`./resources/unicode/ucd.sequences.json`).toString());
+        if (existsSync(`${this.resourcesDir}/ucd.sequences.json`)) {
+            this.sequenceData = JSON.parse(readFileSync(`${this.resourcesDir}/ucd.sequences.json`).toString());
             this.sequenceData.forEach(sequence => {
                 if (sequence.age && sequence.age.startsWith('E')) {
                     sequence.age = ageName[sequence.age];
                 }
             });
         }
-        if (existsSync('./resources/unicode/palettes.json')) {
-            this.paletteData = JSON.parse(readFileSync(`./resources/unicode/palettes.json`).toString());
+        if (existsSync(`${this.resourcesDir}/palettes.json`)) {
+            this.paletteData = JSON.parse(readFileSync(`${this.resourcesDir}/palettes.json`).toString());
         }
     }
 
     getBlocksAsync(callback: (blocks: UnicodeBlock[]) => void): void {
         if (!this.blockData) {
             this.blockData = [];
-            var jsonPath = `./resources/unicode/ucd.blocks.json`;
+            var jsonPath = `${this.resourcesDir}/ucd.blocks.json`;
             readFile(jsonPath, (_err, data) => {
                 this.blockData = JSON.parse(data.toString());
                 callback(this.blockData);
@@ -185,7 +187,7 @@ export default class UnicodeData {
         if (!this.charData[hundred]) {
             this.charData[hundred] = [];
 
-            var jsonPath = `./resources/unicode/ucd.${toHex(hundred * 0x100)}.json`;
+            var jsonPath = `${this.resourcesDir}/ucd.${toHex(hundred * 0x100)}.json`;
             if (existsSync(jsonPath)) {
                 this.onInitialised[hundred] = () => {
                     callback();
@@ -493,7 +495,7 @@ export default class UnicodeData {
     // load all data at the same time
     // which is ONLY for creating the data files and never run by the user
     completeInitAsync(callback?: () => void) {
-        var stream = createReadStream(`./resources/unicode/raw/ucd.all.flat.xml`);
+        var stream = createReadStream(`${this.resourcesDir}/raw/ucd.all.flat.xml`);
         var xml = new XmlStream(stream);
         xml.collect('name-alias');
         xml.collect('block');
@@ -622,7 +624,7 @@ export default class UnicodeData {
 
         xml.on('end', () => {
             // read html.json
-            var htmlNames = JSON.parse(readFileSync(`./resources/unicode/raw/html.json`).toString());
+            var htmlNames = JSON.parse(readFileSync(`${this.resourcesDir}/raw/html.json`).toString());
             htmlNames.forEach((item: any) => {
                 if (item['c'].length == 1) {
                     var code = parseInt(item['c'][0], 16);
@@ -634,7 +636,7 @@ export default class UnicodeData {
             });
 
             // read latex.json
-            var latexNames = JSON.parse(readFileSync(`./resources/unicode/raw/latex.json`).toString());
+            var latexNames = JSON.parse(readFileSync(`${this.resourcesDir}/raw/latex.json`).toString());
             latexNames.forEach((item: any) => {
                 var code = parseInt(item['c'], 16);
                 var hundred = Math.floor(code / 0x100);
@@ -649,7 +651,7 @@ export default class UnicodeData {
     }
 
     parseNamesListAsync(callback?: () => void) {
-        var stream = createReadStream(`./resources/unicode/raw/NamesList.txt`);
+        var stream = createReadStream(`${this.resourcesDir}/raw/NamesList.txt`);
         var reader = createInterface(stream);
 
         var code = 0;
@@ -698,7 +700,7 @@ export default class UnicodeData {
 
         reader.on('close', () => {
             // parse emoji-data.txt
-            var emojiFile = readFileSync(`./resources/unicode/raw/emoji-data.txt`).toString();
+            var emojiFile = readFileSync(`${this.resourcesDir}/raw/emoji-data.txt`).toString();
             this.emojiData = [];
 
             emojiFile.match(/(?<=\n|^)[0-9A-F\.]+\b(?= *; Emoji_Presentation)/g).forEach(value => {
@@ -720,7 +722,7 @@ export default class UnicodeData {
             // parse emoji sequences
             this.sequenceData = [];
             ['emoji-sequences.txt', 'emoji-zwj-sequences.txt'].forEach(fileName => {
-                var text = readFileSync(`./resources/unicode/raw/${fileName}`).toString();
+                var text = readFileSync(`${this.resourcesDir}/raw/${fileName}`).toString();
     
                 text.match(/(?<=\n|^)[0-9A-F\.]+( [0-9A-F\.]+)+ *;[^;]+;[^#]+# *E[0-9\.]+/g).forEach(value => {
                     var result = /^([^;]+);([^;]+);([^#]+)#(.+)$/.exec(value);
@@ -738,18 +740,18 @@ export default class UnicodeData {
     }
 }
 
-function createDataFiles(): void {
-    if (existsSync(`./resources/unicode/ucd.0000.json`))
+function createDataFiles(resourcesDir: string): void {
+    if (existsSync(`${resourcesDir}/ucd.0000.json`))
         return;
 
-    var unicodeData = new UnicodeData(true);
+    var unicodeData = new UnicodeData(resourcesDir, true);
     unicodeData.completeInitAsync(() => {
-        writeFileSync(`./resources/unicode/ucd.blocks.json`, JSON.stringify(unicodeData.blockData));
-        writeFileSync(`./resources/unicode/ucd.emoji.json`, JSON.stringify(unicodeData.emojiData));
-        writeFileSync(`./resources/unicode/ucd.sequences.json`, JSON.stringify(unicodeData.sequenceData));
+        writeFileSync(`${resourcesDir}/ucd.blocks.json`, JSON.stringify(unicodeData.blockData));
+        writeFileSync(`${resourcesDir}/ucd.emoji.json`, JSON.stringify(unicodeData.emojiData));
+        writeFileSync(`${resourcesDir}/ucd.sequences.json`, JSON.stringify(unicodeData.sequenceData));
         for (var hundred = 0; hundred < 0x10ff; hundred++) {
             if (unicodeData.charData[hundred] && unicodeData.charData[hundred].length > 0) {
-                writeFileSync(`./resources/unicode/ucd.${toHex(hundred * 0x100)}.json`, JSON.stringify(unicodeData.charData[hundred]));
+                writeFileSync(`${resourcesDir}/ucd.${toHex(hundred * 0x100)}.json`, JSON.stringify(unicodeData.charData[hundred]));
             }
         }
     });

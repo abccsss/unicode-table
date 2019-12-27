@@ -6,6 +6,9 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
     app.quit();
 }
 
+// Whether is in development environment
+let isDev = !app.isPackaged;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow;
@@ -48,14 +51,15 @@ const menu = Menu.buildFromTemplate([
 Menu.setApplicationMenu(menu);
 
 // unicode data
-let unicodeData = new UnicodeData();
+let unicodeData = new UnicodeData(`${__dirname}/../resources/unicode`);
 
 const createWindow = () => {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        width: 1700,
+        width: isDev ? 1700 : 1100,
         height: 800,
         frame: false,
+        icon: `${__dirname}/../resources/favicon.ico`,
         webPreferences: {
             nodeIntegration: true,
         }
@@ -65,7 +69,9 @@ const createWindow = () => {
     mainWindow.loadURL(`${__dirname}/../src/index.html`);
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    if (isDev) {
+        mainWindow.webContents.openDevTools();
+    }
 
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {
