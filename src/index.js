@@ -914,13 +914,9 @@ const getHtmlChar = (code) => {
     if (codes.length === 1) {
         var code = codes[0];
         // return nothing for private use, unassigned chars with no font coverage, and nonchars
-        if ((code >= 0xe000 && code <= 0xf8ff) || (code >= 0x30000 && code <= 0xdffff) || code >= 0xe01f0 || (code % 0x10000 >= 0xfffe)) return ''; 
-        var isSpecial = code <= 0x20 || (code >= 0x7f && code <= 0xa0) || code == 0xad ||
-            (code >= 0x2000 && code <= 0x200f) || code == 0x2011 || (code >= 0x2028 && code <= 0x202f) ||
-            (code >= 0x205f && code <= 0x206f) || (code >= 0xfe00 && code <= 0xfe0f) || code == 0xfeff ||
-            (code >= 0x1d173 && code <= 0x1d17a);
-        var isTag = code >= 0xe0000 && code < 0xe2000;
-        html += '&#' + (isSpecial ? code + (code >= 0x1d000 ? -0xf000 : code >= 0xfe00 ? -0x1e00 : code >= 0x2000 ? 0xc000 : 0xe000) : isTag ? code - 0xe0000 + 0xe000 : code) + ';';
+        if ((code >= 0xd800 && code <= 0xf8ff) || (code >= 0x30000 && code <= 0xdffff) || code >= 0xe01f0 || (code % 0x10000 >= 0xfffe)) return ''; 
+        var usePrivateArea = !isEmoji;
+        html += '&#' + (usePrivateArea ? code % 0x400 + 0xe000 : code) + ';';
     } else {
         codes.forEach(code => {
             html += '&#' + code + ';';
@@ -1098,7 +1094,7 @@ const loadCodeBlock = (first, rows, noExpandFirst) => {
     }
 };
 
-const goToChar = (code) => {
+const goToChar = (code, goToNextAssigned) => {
     code = parseInt(code);
 
     var $block = $('.code-block');
@@ -1106,7 +1102,13 @@ const goToChar = (code) => {
         var $item = $($block[index]);
         return parseInt($item.attr('data-last-cp')) >= code;
     }).first();
-    if ($block.length === 0 || $block.attr('data-first-cp') > code) return;
+    if ($block.length === 0) return;
+    if ($block.attr('data-first-cp') > code) {
+        if (goToNextAssigned)
+            code = parseInt($block.attr('data-first-cp'));
+        else
+            return;
+    }
     $('.tab[data-header=Table]').trigger('click');
     
     var positionTop;
@@ -1165,7 +1167,7 @@ const getIndexItem = thousand => {
 
     var item = $(`<div class="index-item" data-code="${thousand}">${hex}<span class="index-zeroes">000</span>`);
     item.click(function () {
-        goToChar(parseInt(thousand * 0x1000));
+        goToChar(parseInt(thousand * 0x1000), true);
 
         var totalHeight = $('#index-items').height();
         var viewHeight = $('#main-container').height();
