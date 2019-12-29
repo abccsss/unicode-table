@@ -27,7 +27,6 @@ export class UnicodeCharacter {
     kjo?: string;       // Japanese On reading
     kjk?: string;       // Japanese Kun reading
     kk?: string;        // Korean reading
-    km?: string;        // Mandarin reading
     kv?: string;        // Vietnamese reading
     ky?: number[];      // y-variant(s)
     latex?: string[];
@@ -47,7 +46,6 @@ export class UnicodeCharacter {
         kjo?: string,
         kjk?: string,
         kk?: string,
-        km?: string,
         kv?: string,
         ky?: number[],
         latex?: string[],
@@ -66,7 +64,6 @@ export class UnicodeCharacter {
         this.kjo = data.kjo;
         this.kjk = data.kjk;
         this.kk = data.kk;
-        this.km = data.km;
         this.kv = data.kv;
         this.ky = data.ky;
         this.latex = data.latex;
@@ -579,18 +576,29 @@ export default class UnicodeData {
 
             if (!this.charData[hundred])
                 this.charData[hundred] = [];
+            var kc: string[] = [];
+            if (item['$']['kHanyuPinlu']) kc = item['$']['kHanyuPinlu'].replace(/\(\d+\)/g, '').split(' ');
+            if (item['$']['kHanyuPinyin']) {
+                item['$']['kHanyuPinyin'].replace(/.+:/, '').split(',').forEach((s: string) => {
+                    if (!kc.includes(s)) kc.push(s);
+                });
+            }
+            if (item['$']['kMandarin']) {
+                item['$']['kMandarin'].split(' ').forEach((s: string) => {
+                    if (!kc.includes(s)) kc.push(s);
+                });
+            }
             this.charData[hundred][code % 0x100] = new UnicodeCharacter({
                 code: code,
                 type: 'char',
                 name: name,
                 gc: item['$']['gc'],
                 age: item['$']['age'],
-                kc: item['$']['kHanyuPinyin']?.replace(/.+:/, '')?.replace(/,/g, ' '),
+                kc: kc.length === 0 ? undefined : kc.join(' '),
                 kd: item['$']['kDefinition'],
                 kjk: item['$']['kJapaneseKun']?.toLowerCase(),
                 kjo: item['$']['kJapaneseOn']?.toLowerCase(),
                 kk: item['$']['kKorean']?.toLowerCase(),
-                km: item['$']['kMandarin'],
                 kv: item['$']['kVietnamese'],
                 ky: yVariants
             });
@@ -670,30 +678,28 @@ export default class UnicodeData {
         });
 
         xml.on('end', () => {
-            // add pinyin for simplified characters
+            // unihan: add pinyin of any variant to a character
             for (var hundred = 0; hundred <= 0x10ff; hundred++) {
                 var data = this.charData[hundred];
                 if (!data || data.length === 0) continue;
 
                 for (var i = 0; i < 0x100; i++) {
                     var char = data[i];
-                    var kc: string[] = [];
-                    if (!char.kc) {
-                        if (char.ky) {
-                            char.ky.forEach(code => {
-                                var variant = this.charData[Math.floor(code / 0x100)][code % 0x100];
-                                if (variant.kc) {
-                                    variant.kc.split(' ').forEach(item => {
-                                        if (!kc.includes(item)) kc.push(item);
-                                    });
-                                }
-                            });
-                        }
-                        if (char.km) {
-                            char.km.split(' ').forEach(item => {
-                                if (!kc.includes(item)) kc.push(item);
-                            });
-                        }
+                    if (char.ky) {
+                        var kc: string[] = char.kc?.split(' ') ?? [];
+                        char.ky.forEach(code => {
+                            var variant = this.charData[Math.floor(code / 0x100)][code % 0x100];
+                            if (variant.kc) {
+                                variant.kc.split(' ').forEach(item => {
+                                    if (!kc.includes(item)) kc.push(item);
+                                });
+                            }
+                            if (!variant.ky) variant.ky = [];
+                            if (!variant.ky.includes(char.code)) {
+                                variant.ky.push(char.code);
+                                variant.ky.sort();
+                            }
+                        });
                         if (kc.length > 0) {
                             char.kc = kc.join(' ');
                         }
