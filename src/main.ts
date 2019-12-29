@@ -133,7 +133,14 @@ ipcMain.on('asynchronous-message', (event, arg) => {
                         'latex': char.latex,
                         'name': char.name,
                         'is-emoji': char.emoji,
-                        'general-category': char.getGeneralCategory()
+                        'general-category': char.getGeneralCategory(),
+                        'k-definition': char.kd,
+                        'k-mandarin': char.kc,
+                        'k-japanese-on': char.kjo,
+                        'k-japanese-kun': char.kjk,
+                        'k-korean': char.kk,
+                        'k-vietnamese': char.kv,
+                        'k-variants': char.ky,
                     },
                     'sender-position': arg['sender-position']
                 });

@@ -760,7 +760,7 @@ input::selection {
 }
 
 .tooltip-char-property-header {
-    margin: 3px 0 -3px 0;
+    margin: 3px 0 -1px 0;
     color: var(--color-text-tertiary);
     text-transform: uppercase;
     font-size: 11px;
@@ -771,6 +771,24 @@ input::selection {
     font-size: 14px;
     color: var(--color-text-secondary);
     -webkit-user-select: text;
+    line-height: 14px;
+}
+
+.tooltip-reading-header {
+    color: var(--color-code);
+    font-size: 11px;
+    text-transform: uppercase;
+    display: inline-block;
+    background-color: var(--color-tertiary);
+    border-radius: 3px;
+    padding: 2px 5px;
+    margin: 2px 10px 2px 0;
+    -webkit-user-select: none;
+}
+
+.tooltip-reading {
+    display: inline-block;
+    margin-right: 15px;
 }
 
 span.dim {

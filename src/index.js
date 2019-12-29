@@ -1352,6 +1352,30 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                 });
                 tooltipHtml += `</div>`;
             }
+            if (char['k-definition']) {
+                tooltipHtml += `<div class="tooltip-char-property-header">Definition</div>
+                    <div class="tooltip-char-property">${htmlEncode(char['k-definition'])}</div>`;
+            }
+            if (char['k-mandarin'] || char['k-japanese-on'] || char['k-japanese-kun'] || char['k-korean'] || char['k-vietnamese']) {
+                tooltipHtml += `<div class="tooltip-char-property-header">Readings</div>
+                    <div class="tooltip-char-property">`;
+                if (char['k-mandarin']) 
+                    tooltipHtml += `<div class="tooltip-reading"><div class="tooltip-reading-header">Mandarin</div>`
+                        + `${htmlEncode(char['k-mandarin'].replace(/ /g, ', '))}&nbsp;</div>`;
+                if (char['k-japanese-on']) 
+                    tooltipHtml += `<div class="tooltip-reading"><div class="tooltip-reading-header">Japanese On</div>`
+                        + `${htmlEncode(char['k-japanese-on'].replace(/ /g, ', '))}&nbsp;</div>`;
+                if (char['k-japanese-kun']) 
+                    tooltipHtml += `<div class="tooltip-reading"><div class="tooltip-reading-header">Japanese Kun</div>`
+                        + `${htmlEncode(char['k-japanese-kun'].replace(/ /g, ', '))}&nbsp;</div>`;
+                if (char['k-korean']) 
+                    tooltipHtml += `<div class="tooltip-reading"><div class="tooltip-reading-header">Korean</div>`
+                        + `${htmlEncode(char['k-korean'].replace(/ /g, ', '))}&nbsp;</div>`;
+                if (char['k-vietnamese']) 
+                    tooltipHtml += `<div class="tooltip-reading"><div class="tooltip-reading-header">Vietnamese</div>`
+                        + `${htmlEncode(char['k-vietnamese'].replace(/ /g, ', '))}&nbsp;</div>`;
+                tooltipHtml += `</div>`;
+            }
             if (char['cross-references']) {
                 tooltipHtml +=
                     `<div class="tooltip-char-property-header">Cross References</div>
@@ -1367,18 +1391,28 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                 });
                 tooltipHtml += `</div>`;
             }
-            if (variants) {
+            if (variants || char['k-variants']) {
                 tooltipHtml +=
                     `<div class="tooltip-char-property-header">Variants</div>
                     <div class="code-list">`;
-                variants.forEach(variant => {
-                    tooltipHtml += 
-                    `<div class="code-point" data-codes="${variant.codes}" data-title>
-                        <div class="code-point-char">${getHtmlChar(variant.codes)}</div>
-                        <div class="code-point-number"><div>${variant.codes.replace(/ .+/, '...')}</div></div>
-                        <div class="code-point-title">${variant.codes}<br/>${variant.name}<br/>(click to enter)</div>
-                    </div>`
-                });
+                if (char['k-variants'])
+                    char['k-variants'].forEach(code => {
+                        tooltipHtml += 
+                        `<div class="code-point" data-code="${code}">
+                            <div class="code-point-char"></div>
+                            <div class="code-point-number"><div>${toHex(code)}</div></div>
+                            <div class="code-point-title"></div>
+                        </div>`
+                    });
+                if (variants)
+                    variants.forEach(variant => {
+                        tooltipHtml += 
+                        `<div class="code-point" data-codes="${variant.codes}" data-title>
+                            <div class="code-point-char">${getHtmlChar(variant.codes)}</div>
+                            <div class="code-point-number"><div>${variant.codes.replace(/ .+/, '...')}</div></div>
+                            <div class="code-point-title">${variant.codes}<br/>${variant.name}<br/>(click to enter)</div>
+                            </div>`
+                    });
                 tooltipHtml += `</div>`;
             }
             if (char['age']) tooltipHtml +=
@@ -1405,6 +1439,14 @@ ipcRenderer.on('asynchronous-reply', (_event, arg) => {
                     ipcRenderer.send('asynchronous-message', {
                         'type': 'get-char-name',
                         'code': parseInt(item, 16)
+                    })
+                });
+            }
+            if (char['k-variants']) {
+                char['k-variants'].forEach(item => {
+                    ipcRenderer.send('asynchronous-message', {
+                        'type': 'get-char-name',
+                        'code': item
                     })
                 });
             }
