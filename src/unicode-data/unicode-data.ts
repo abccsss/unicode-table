@@ -560,7 +560,12 @@ export default class UnicodeData {
             }
 
             var yVariants = [];
-            [item['$']['kTraditionalVariant'], item['$']['kSimplifiedVariant'], item['$']['kSemanticVariant']].forEach(s => {
+            [
+                item['$']['kTraditionalVariant'],
+                item['$']['kSimplifiedVariant'],
+                item['$']['kSemanticVariant'],
+                item['$']['kZVariant']
+            ].forEach(s => {
                 if (s) {
                     s.match(/\bU\+[0-9A-F]+\b/g).forEach((item: string) => {
                         var code = parseInt(item.substring(2), 16);
