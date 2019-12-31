@@ -88,5 +88,8 @@ typings/
 # Electron-Forge
 out/
 
+# electron-builder
+dist/
+
 # Unicode raw data
 resources/unicode/raw

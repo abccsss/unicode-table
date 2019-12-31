@@ -6,6 +6,7 @@ const $ = require('jquery');
 let titleBar = new Titlebar({
     backgroundColor: Color.fromHex('#30343c'),
     itemBackgroundColor: Color.fromHex('#094771'),
+    icon: '../resources/favicon.ico'
 });
 titleBar.updateTitle('Unicode Table');
 
