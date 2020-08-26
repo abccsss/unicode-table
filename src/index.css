@@ -424,7 +424,7 @@ body {
 
 input {
     background-color: var(--color-secondary);
-    border: .5px solid var(--color-border);
+    border: 1px solid var(--color-border);
     color: var(--color-text-secondary);
     font: inherit;
 }
@@ -961,14 +961,14 @@ span.index-zeroes {
 #editor {
     height: 80px;
     margin: 10px 15px;
-    outline: .5px solid var(--color-border);
+    outline: 1px solid var(--color-border);
     background-color: var(--color-primary);
     padding: 5px;
     overflow-x: scroll;
 }
 
 #editor[data-focus] {
-    outline: .5px solid var(--color-focus); 
+    outline: 1px solid var(--color-focus); 
 }
 
 #editor-content {
