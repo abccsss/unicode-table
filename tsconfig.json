@@ -1,17 +1,10 @@
 {
     "compilerOptions": {
-        "outDir": "./out/",
-        "noImplicitAny": false,
-        "removeComments": true,
-        "moduleResolution": "node",
-        "module": "commonjs",
-        "target": "ES5",
-        "sourceMap": true
+        "outDir": "out",
+        "sourceMap": true,
+        "module": "commonjs"
     },
     "include": [
         "src/**/*"
-    ],
-    "exclude": [
-        "node_modules/**/*"
     ]
 }

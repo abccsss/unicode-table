@@ -10,12 +10,9 @@
             "name": "Electron Main",
             "preLaunchTask": "tsc",
             "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
-            "runtimeArgs": [ "." ],
-            "program": "${workspaceFolder}/src/main.ts",
-            "outFiles": ["${workspaceFolder}/out/*.js"],
-            "skipFiles": [
-                "<node_internals>/**"
-            ]
+            "program": "${workspaceFolder}/out/main.js",
+            "sourceMaps": true,
+            "skipFiles": ["<node_internals>/**"]
         }
     ]
 }

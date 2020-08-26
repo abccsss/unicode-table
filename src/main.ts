@@ -1,11 +1,6 @@
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import UnicodeData from './unicode-data/unicode-data';
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
-    app.quit();
-}
-
 // Whether is in development environment
 let isDev = !app.isPackaged;
 
@@ -21,32 +16,104 @@ versions['unicode-full'] = '12.1 (May 2019)';
 // Create the menu
 const menu = Menu.buildFromTemplate([
     {
-        label: "Edit",
+        label: 'Edit',
         submenu: [
-            { role: 'undo', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'undo' }); } },
-            { role: 'redo', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'redo' }); } },
+            {
+                role: 'undo',
+                click: (_, browserWindow) => {
+                    browserWindow.webContents.send('command', {
+                        command: 'undo',
+                    });
+                },
+            },
+            {
+                role: 'redo',
+                click: (_, browserWindow) => {
+                    browserWindow.webContents.send('command', {
+                        command: 'redo',
+                    });
+                },
+            },
             { type: 'separator' },
-            { role: 'cut', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'cut' }); } },
-            { role: 'copy', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'copy' }); } },
-            { role: 'paste', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'paste' }); } },
+            {
+                role: 'cut',
+                click: (_, browserWindow) => {
+                    browserWindow.webContents.send('command', {
+                        command: 'cut',
+                    });
+                },
+            },
+            {
+                role: 'copy',
+                click: (_, browserWindow) => {
+                    browserWindow.webContents.send('command', {
+                        command: 'copy',
+                    });
+                },
+            },
+            {
+                role: 'paste',
+                click: (_, browserWindow) => {
+                    browserWindow.webContents.send('command', {
+                        command: 'paste',
+                    });
+                },
+            },
             { type: 'separator' },
             {
                 label: 'Normalise',
                 submenu: [
-                    { label: 'NFC (Canonical Composition)', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'normalise-nfc' }); } },
-                    { label: 'NFD (Canonical Decomposition)', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'normalise-nfd' }); } },
-                    { label: 'NFKC (Compatibility Composition)', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'normalise-nfkc' }); } },
-                    { label: 'NFKD (Compatibility Decomposition)', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'normalise-nfkd' }); } }
-                ]
-            }
-        ]
+                    {
+                        label: 'NFC (Canonical Composition)',
+                        click: (_, browserWindow) => {
+                            browserWindow.webContents.send('command', {
+                                command: 'normalise-nfc',
+                            });
+                        },
+                    },
+                    {
+                        label: 'NFD (Canonical Decomposition)',
+                        click: (_, browserWindow) => {
+                            browserWindow.webContents.send('command', {
+                                command: 'normalise-nfd',
+                            });
+                        },
+                    },
+                    {
+                        label: 'NFKC (Compatibility Composition)',
+                        click: (_, browserWindow) => {
+                            browserWindow.webContents.send('command', {
+                                command: 'normalise-nfkc',
+                            });
+                        },
+                    },
+                    {
+                        label: 'NFKD (Compatibility Decomposition)',
+                        click: (_, browserWindow) => {
+                            browserWindow.webContents.send('command', {
+                                command: 'normalise-nfkd',
+                            });
+                        },
+                    },
+                ],
+            },
+        ],
     },
     {
-        label: "Help",
+        label: 'Help',
         submenu: [
-            { role: 'about', label: 'About', click: (_, browserWindow) => { browserWindow.webContents.send('command', { command: 'about', versions: process.versions }); } }
-        ]
-    }
+            {
+                role: 'about',
+                label: 'About',
+                click: (_, browserWindow) => {
+                    browserWindow.webContents.send('command', {
+                        command: 'about',
+                        versions: process.versions,
+                    });
+                },
+            },
+        ],
+    },
 ]);
 Menu.setApplicationMenu(menu);
 
@@ -59,14 +126,14 @@ const createWindow = () => {
         width: isDev ? 1700 : 1100,
         height: 800,
         frame: false,
-        icon: `${__dirname}/../resources/favicon.ico`,
         webPreferences: {
             nodeIntegration: true,
-        }
+            enableRemoteModule: true,
+        },
     });
 
     // and load the index.html of the app.
-    mainWindow.loadURL(`${__dirname}/../src/index.html`);
+    mainWindow.loadFile(`${__dirname}/../src/index.html`);
 
     // Open the DevTools.
     if (isDev) {
@@ -108,30 +175,30 @@ app.on('activate', () => {
 ipcMain.on('asynchronous-message', (event, arg) => {
     switch (arg['type']) {
         case 'init':
-            unicodeData.getBlocksAsync(blocks => {
+            unicodeData.getBlocksAsync((blocks) => {
                 event.sender.send('asynchronous-reply', {
-                    'type': 'init',
-                    'blocks': blocks,
-                    'emoji': unicodeData.emojiData,
-                    'sequences': unicodeData.sequenceData,
-                    'palettes': unicodeData.paletteData,
-                    'is-mac': process.platform === 'darwin'
+                    type: 'init',
+                    blocks: blocks,
+                    emoji: unicodeData.emojiData,
+                    sequences: unicodeData.sequenceData,
+                    palettes: unicodeData.paletteData,
+                    'is-mac': process.platform === 'darwin',
                 });
             });
             break;
         case 'get-char':
             var code = arg['code'];
-            unicodeData.getCharAsync(code, char => {
+            unicodeData.getCharAsync(code, (char) => {
                 event.sender.send('asynchronous-reply', {
-                    'type': 'get-char',
-                    'char': {
-                        'age': char.getAge(),
+                    type: 'get-char',
+                    char: {
+                        age: char.getAge(),
                         'cross-references': char.cf,
-                        'code': char.code,
-                        'type': char.type,
-                        'html': char.html,
-                        'latex': char.latex,
-                        'name': char.name,
+                        code: char.code,
+                        type: char.type,
+                        html: char.html,
+                        latex: char.latex,
+                        name: char.name,
                         'is-emoji': char.emoji,
                         'general-category': char.getGeneralCategory(),
                         'k-definition': char.kd,
@@ -142,20 +209,20 @@ ipcMain.on('asynchronous-message', (event, arg) => {
                         'k-vietnamese': char.kv,
                         'k-variants': char.ky,
                     },
-                    'sender-position': arg['sender-position']
+                    'sender-position': arg['sender-position'],
                 });
             });
             break;
         case 'get-char-name':
             var code = arg['code'];
-            unicodeData.getCharAsync(code, char => {
+            unicodeData.getCharAsync(code, (char) => {
                 event.sender.send('asynchronous-reply', {
-                    'type': 'get-char-name',
-                    'char': {
-                        'code': char.code,
-                        'name': char.name,
+                    type: 'get-char-name',
+                    char: {
+                        code: char.code,
+                        name: char.name,
                         'is-emoji': char.emoji,
-                    }
+                    },
                 });
             });
             break;
@@ -169,35 +236,37 @@ ipcMain.on('asynchronous-message', (event, arg) => {
                     if (hundred) {
                         var char = hundred[i % 0x100];
                         arr.push({
-                            'code': char.code,
-                            'type': char.type,
-                            'is-emoji': char.emoji
-                        })
-                    }
-                    else {
+                            code: char.code,
+                            type: char.type,
+                            'is-emoji': char.emoji,
+                        });
+                    } else {
                         arr.push({
-                            'code': i,
-                            'type': i % 0x10000 >= 0xfffe ? 'noncharacter' : 'reserved'
+                            code: i,
+                            type:
+                                i % 0x10000 >= 0xfffe
+                                    ? 'noncharacter'
+                                    : 'reserved',
                         });
                     }
                 }
 
                 event.sender.send('asynchronous-reply', {
-                    'type': 'get-row',
-                    'code': code,
-                    'chars': arr
+                    type: 'get-row',
+                    code: code,
+                    chars: arr,
                 });
             });
             break;
         case 'init-search':
-            unicodeData.search('', () => { });
+            unicodeData.search('', () => {});
             break;
         case 'search':
-            unicodeData.search(arg['query'], results => {
+            unicodeData.search(arg['query'], (results) => {
                 event.sender.send('asynchronous-reply', {
-                    'type': 'search',
-                    'query': arg['query'],
-                    'results': results
+                    type: 'search',
+                    query: arg['query'],
+                    results: results,
                 });
             });
             break;

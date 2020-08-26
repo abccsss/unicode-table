@@ -1,77 +1,46 @@
 {
-  "name": "unicode-table",
-  "productName": "unicode-table",
-  "version": "0.1.0",
-  "description": "Unicode character table",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/abccsss/unicode-table.git"
-  },
-  "main": "src/main.ts",
-  "scripts": {
-    "prestart": "tsc",
-    "start": "electron-forge start",
-    "build": "electron-builder build"
-  },
-  "keywords": [],
-  "author": {
-    "name": "Bu Chenjing",
-    "email": "buchenjing@outlook.com"
-  },
-  "build": {
-    "productName": "Unicode Table"
-  },
-  "license": "MIT",
-  "config": {
-    "forge": {
-      "packagerConfig": {
-        "icon": "resources/favicon.ico",
-        "ignore": [
-          "\\.vscode",
-          "resources/unicode/raw"
-        ]
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "unicode_table"
-          }
+    "name": "unicode-table",
+    "productName": "unicode-table",
+    "version": "0.1.0",
+    "description": "Unicode character table",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/abccsss/unicode-table.git"
+    },
+    "main": "out/main.js",
+    "scripts": {
+        "prestart": "tsc",
+        "start": "electron .",
+        "build": "electron-builder -wl"
+    },
+    "keywords": [],
+    "author": {
+        "name": "Bu Chenjing",
+        "email": "buchenjing@outlook.com"
+    },
+    "build": {
+        "productName": "Unicode Table",
+        "linux": {
+            "target": "deb",
+            "executableName": "unicode-table",
+            "icon": "build/icon",
+            "synopsis": "Unicode character table",
+            "category": "Development"
         },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
+        "win": {
+            "publisherName": "Unicode Table",
+            "icon": "build/icon.ico"
         }
-      ]
+    },
+    "license": "MIT",
+    "dependencies": {
+        "custom-electron-titlebar": "^3.2.4",
+        "jquery": "^3.5.1"
+    },
+    "devDependencies": {
+        "electron": "^10.0.0",
+        "electron-builder": "^21.2.0",
+        "prettier": "^2.1.1",
+        "typescript": "^4.0.2"
     }
-  },
-  "dependencies": {
-    "custom-electron-titlebar": "^3.1.0",
-    "electron-compile": "^6.4.4",
-    "electron-squirrel-startup": "^1.0.0",
-    "jquery": "^3.4.1"
-  },
-  "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.45",
-    "@electron-forge/maker-deb": "^6.0.0-beta.45",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.45",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.45",
-    "@electron-forge/maker-zip": "^6.0.0-beta.45",
-    "electron": "^7.1.7",
-    "electron-builder": "^21.2.0",
-    "electron-prebuilt-compile": "4.0.0",
-    "node-expat": "^2.3.18",
-    "typescript": "^3.7.3",
-    "xml-stream": "^0.4.5"
-  }
 }
