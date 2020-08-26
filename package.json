@@ -9,8 +9,7 @@
     },
     "main": "out/main.js",
     "scripts": {
-        "prestart": "tsc",
-        "start": "electron .",
+        "start": "tsc && electron ./out/main.js",
         "build": "electron-builder -wl"
     },
     "keywords": [],
